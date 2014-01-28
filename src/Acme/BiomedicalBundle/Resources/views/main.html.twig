@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>{% block title %}{{title}}{% endblock %}</title>
+<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+{% block stylesheets %}
+<link href="{{ asset('bundles/acmebiomedical/css/main.css') }}"
+	media="screen" rel="stylesheet" type="text/css" />
+<link rel="stylesheet"
+	href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+{% endblock %}  
+{% block javascripts %}
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+{% endblock %}
+</head>
+<body>
+	{% block body %}
+	<div id="header">
+		{% block header %}
+		<div id="head">
+			<ul>
+				<li class="nav_text"><a href="{{path('acme_biomedical_homepage')}}">BioMedicalPortal</a></li>
+				<li class="nav_text"><a href="/machin">Essai</a></li>
+			</ul>
+		</div>
+		{% endblock %}
+	</div>
+	<div id="content">
+		{% block content %} 
+		{% endblock %}
+	</div>
+	<div id="footer">{% block footer %} Copyright 2014 Burc Pierre,
+		Duplouy Olivier{% endblock %}</div>
+	{% endblock %}
+</body>
+</html>

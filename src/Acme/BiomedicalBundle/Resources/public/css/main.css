@@ -1,0 +1,74 @@
+html{
+	margin:0;
+	padding:0;
+}
+
+body{
+	margin:0;
+	padding:0;
+	font-family:"Myriad Pro", "Myriad Web Pro", "Myriad Web", "Myriad", 
+	"Trebuchet MS","Tahoma","Helvetica", "Arial",sans-serif;
+	font-size: small;
+}
+
+a{
+	text-decoration: none;
+	color: black;	
+}
+
+li{
+	padding-right: 30px;	
+}
+
+ul li{
+	list-style: none;	
+}
+
+.home_button{
+	height: 37px;
+	width: 106px;
+	border:0px;
+	color:white;
+	background-image:url('../images/home_button.png');
+}
+
+.nav_text a{
+	font-family: 'Droid_Sans',sans-serif; 	
+	font-size: 1.1em;
+	padding: 25px 15px;
+	position: relative;
+	text-decoration: none;
+	top:11px;
+}
+
+#head{
+	background:url('../images/header_bg.png') repeat-x;
+	width: 100%;
+	min-width: 1200px;
+	height: 43px;
+	margin:auto;
+	
+}
+
+#head ul{
+	margin:0;
+	padding:0;
+	list-style-type:none;	
+}
+
+#head ul li{
+	display:inline;
+	float: left;
+}
+
+#head ul li a{
+	color: white;
+}
+
+#footer{
+	padding:2em;
+	text-align: center;
+	background: #234979;
+	color: white;
+	clear: both;
+}

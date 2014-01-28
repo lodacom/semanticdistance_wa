@@ -1,0 +1,3 @@
+ontology:
+    type:   rest
+    resource:   Acme\BiomedicalBundle\Controller\OntologyController

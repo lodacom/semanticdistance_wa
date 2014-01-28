@@ -1,0 +1,23 @@
+acme_biomedical_homepage:
+    pattern:  /
+    defaults: { _controller: AcmeBiomedicalBundle:Default:index }
+    requirements: 
+      _method: GET
+    
+acme_biomedical_search:
+    pattern:  /
+    defaults: { _controller: AcmeBiomedicalBundle:Default:showConcepts }
+    requirements: 
+      _method: POST
+
+acme_biomedical_search_ontology:
+    pattern:  /search_ontology
+    defaults: { _controller: AcmeBiomedicalBundle:Default:showOntologies }
+    requirements: 
+      _method: POST
+      
+acme_biomedical_ontology:
+    pattern:  /search_ontology
+    defaults: { _controller: AcmeBiomedicalBundle:Default:goToOntologie }
+    requirements: 
+      _method: GET

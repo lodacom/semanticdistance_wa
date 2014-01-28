@@ -1,0 +1,12 @@
+acme_biomedical:
+    resource: "@AcmeBiomedicalBundle/Resources/config/routing.yml"
+    prefix:   /
+    
+acme_biomedical_api:
+    type:   rest
+    resource: "@AcmeBiomedicalBundle/Resources/config/routing_api.yml"
+    prefix:   /rest_api
+    
+NelmioApiDocBundle:
+  resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+  prefix:   /api/doc

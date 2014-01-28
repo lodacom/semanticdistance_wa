@@ -1,0 +1,103 @@
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %}
+{% block javascripts %}
+	{{ parent() }}
+<script>
+  		$(function() {
+  			$('#search').autocomplete({
+        		source : function(requete, reponse){
+            	var motcle = $('#search').val();
+            	var objData = {};
+            	objData = { search: motcle };
+            	$.ajax({
+                	type:"POST",
+                	url : "{{path('acme_biomedical_search')}}",
+                	dataType : 'json',
+                	data : objData,
+ 
+                	success : function(donnee){
+                    	reponse($.map(donnee, function(objet){
+                        	return objet;
+                    	}));
+                	}
+            	});
+        		}
+    		});
+  			$('#searchOntology').autocomplete({
+        		source : function(requete, reponse){
+            	var motcle = $('#searchOntology').val();
+            	var objData = {};
+            	objData = { searchOntology: motcle };
+            	$.ajax({
+                	type:"POST",
+                	url : "{{path('acme_biomedical_search_ontology')}}",
+                	dataType : 'json',
+                	data : objData,
+ 
+                	success : function(donnee){
+                    	reponse($.map(donnee, function(objet){
+                        	return objet;
+                    	}));
+                	}
+            	});
+        		}
+    		});
+    	});
+  		</script>
+{% endblock %}
+{% block content %}
+	{{ parent() }}
+<span style="font-size:1.5em">
+			<b>Bienvenue sur BioMedicalPortal!</b>
+		</span>
+		<div>
+			<table width="100%">
+				<tr>
+					<form action="/search">
+						<td valign="top" width="33%">
+							<fieldset>
+								<legend>Rechercher dans toutes les ontologies</legend>
+								<input type="text" id="search" name="search"
+									value="Entrer un concept, ex Melanoma" /> <input
+									class="home_button" type="submit" value="Chercher">
+							</fieldset>
+						</td>
+					</form>
+					<form action="{{ path('acme_biomedical_ontology') }}" method="get">
+						<td valign="top" width="33%">
+							<fieldset>
+								<legend>Rechercher une ontologie</legend>
+								<input type="text" id="searchOntology" name="searchOntology"
+									value="Entrer un nom d'ontology, ex NCI Thesaurus" /> <input
+									class="home_button" type="submit" value="Explorer">
+							</fieldset>
+						</td>
+					</form>
+					<td valign="top" width="33%">
+						<fieldset>
+							<legend>Rechercher les ressources</legend>
+							<input type="text" id="searchResources" name="searchResources"
+								value="Entrer un concept, ex Melanoma" /> <input
+								class="home_button" type="submit" value="Chercher">
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<fieldset>
+							<legend>Les ontologies les plus regardées</legend>
+						</fieldset>
+					</td>
+					<td>
+						<fieldset>
+							<legend>Les dernières notes</legend>
+						</fieldset>
+					</td>
+					<td>
+						<fieldset>
+							<legend>Les derniers mappings</legend>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+		</div>
+{% endblock %}
