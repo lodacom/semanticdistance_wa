@@ -21,3 +21,9 @@ acme_biomedical_ontology:
     defaults: { _controller: AcmeBiomedicalBundle:Default:goToOntologie }
     requirements: 
       _method: GET
+      
+acme_biomedical_semantic_distance:
+    pattern:  /semantic_distance
+    defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:index }
+    requirements: 
+      _method: GET

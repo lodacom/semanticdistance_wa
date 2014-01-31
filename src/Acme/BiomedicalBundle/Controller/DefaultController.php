@@ -31,10 +31,10 @@ class DefaultController extends Controller
             $term = $request->request->get('search');
             
             $quer = $this->getDoctrine()->getEntityManager();
-            $query=$quer->createQuery("SELECT d.definition
-            		FROM AcmeBiomedicalBundle:Definition d
-            		WHERE d.definition LIKE ?1
-            		ORDER BY d.definition ASC")
+            $query=$quer->createQuery("SELECT t.name
+            		FROM AcmeBiomedicalBundle:Term t
+            		WHERE t.name LIKE ?1
+            		ORDER BY t.name ASC")
             ->setParameter(1,$term."%")
             ->setMaxResults(10);
             $recup = $query->getArrayResult();
