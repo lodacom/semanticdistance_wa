@@ -17,7 +17,7 @@ use Acme\BiomedicalBundle\Entity\Ontology;
 
 class OntologyController extends FOSRestController{
 	
-	const SESSION_CONTEXT_ONTOLOGY = 'ontologies';
+	const SESSION_CONTEXT_ONTOLOGY = 'ontology';
 	
 	/**
 	 * List all ontologies.
@@ -65,16 +65,18 @@ class OntologyController extends FOSRestController{
 	 *
 	 * @param integer     $id      the ontology id
 	 *
-	 * @return array
+	 * @return object
 	 *
-	 * @throws NotFoundHttpException when note not exist
+	 * @throws NotFoundHttpException when ontology not exist
 	 */
 	public function getOntologyAction($id){
 		$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")->find($id);
 		/*$view = new View($ontology);
 		$group = $this->container->get('security.context')->isGranted('ROLE_API') ? 'restapi' : 'standard';
 		$view->getSerializationContext()->setGroups(array('Default', $group));*/
-		
+		if ($ontology==null) {
+			throw $this->createNotFoundException("Ontology avec l'identifiant: ".$id." n'existe pas!");
+		}
 		return $ontology;
 	}
 }

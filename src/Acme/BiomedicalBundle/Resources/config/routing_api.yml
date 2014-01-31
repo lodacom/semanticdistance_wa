@@ -1,3 +1,6 @@
 ontology:
     type:   rest
     resource:   Acme\BiomedicalBundle\Controller\OntologyController
+semantic_distance:
+    type:   rest
+    resource:   Acme\BiomedicalBundle\Controller\SemanticDistanceController
