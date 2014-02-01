@@ -34,8 +34,8 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 * @Annotations\QueryParam(name="concept_1", requirements="\d+|\w+", nullable=false, description="First concept to compare.")
-	 * @Annotations\QueryParam(name="concept_2", requirements="\d+|\w+", nullable=false, description="Second concept to compare.")
+	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|\w+)", description="First id concept to compare.Or the URI of concept 1")
+	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|\w+)", description="Second id concept to compare.Or the URI of concept 2")
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *
@@ -44,7 +44,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 * @return array
 	 */
-	public function calculateDistanceAction(Request $request, ParamFetcherInterface $paramFetcher){
+	public function calculateDistanceAction(ParamFetcherInterface $paramFetcher){
 		$concept_1=$paramFetcher->get('concept_1');
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
@@ -107,9 +107,9 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=false, description="L'identifiant de la distance.
+	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
-	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", nullable=false, description="The maximum distance to search.")
+	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", description="The maximum distance to search.")
 	 * @Annotations\View()
 	 *
 	 *	@param integer     $concept      the concept id or the URI of concept    
