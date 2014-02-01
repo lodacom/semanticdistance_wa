@@ -20,9 +20,14 @@
 	<div id="header">
 		{% block header %}
 		<div id="head">
-			<ul>
+			<ul id="menu">
 				<li class="nav_text"><a href="{{path('acme_biomedical_homepage')}}">BioMedicalPortal</a></li>
-				<li class="nav_text"><a href="{{path('acme_biomedical_semantic_distance')}}">Distance sémantique</a></li>
+				<li class="nav_text"><a href="#">Distances sémantiques</a>
+					<ul>
+						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_two_concepts')}}">Entre deux concepts</a></li>
+						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_concept_dist')}}">Avec un concept et une distance</a></li>
+					</ul>
+				</li>
 			</ul>
 		</div>
 		{% endblock %}

@@ -65,6 +65,19 @@ ul li{
 	color: white;
 }
 
+#head li ul{
+	display: none;	
+}
+
+#head li:hover ul {
+	position: absolute;	
+	display: inherit;
+	background:url('../images/header_bg.png') repeat;	
+	width:250px;
+	height:45px;
+	margin-top:25px;
+}
+
 #footer{
 	padding:2em;
 	text-align: center;
