@@ -2,6 +2,8 @@
 
 namespace Acme\BiomedicalBundle\Model;
 
+use Acme\BiomedicalBundle\Entity\Ontology;
+
 class OntologyCollection {
 	
 	/**
