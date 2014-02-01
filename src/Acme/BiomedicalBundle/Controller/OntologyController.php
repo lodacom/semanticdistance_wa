@@ -37,7 +37,7 @@ class OntologyController extends FOSRestController{
 	 *
 	 * @return array
 	 */
-	public function allOntologiesAction(Request $request, ParamFetcherInterface $paramFetcher){
+	public function allOntologyAction(Request $request, ParamFetcherInterface $paramFetcher){
 		$session = $request->getSession();
 		
 		$offset = $paramFetcher->get('offset');

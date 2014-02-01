@@ -43,7 +43,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 * @return array
 	 */
-	public function calculateAction(Request $request, ParamFetcherInterface $paramFetcher){
+	public function calculateDistanceAction(Request $request, ParamFetcherInterface $paramFetcher){
 		$concept_1=$paramFetcher->get('concept_1');
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
@@ -96,7 +96,31 @@ class SemanticDistanceController extends FOSRestController{
 		return $distances;
 	}
 	
-	public function getSemanticDistance(){
-		
+	/**
+	 * Retreive concepts 
+	 *
+	 * @ApiDoc(
+	 *   resource = true,
+	 *   statusCodes = {
+	 *     200 = "Returned when successful"
+	 *   }
+	 * )
+	 *
+	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
+	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
+	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", nullable=false, description="The maximum distance to search.")
+	 * @Annotations\View()
+	 *
+	 *
+	 * @return array
+	 */
+	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
+		$dist_id=$paramFetcher->get('dist_id');
+		$distance_max=$paramFetcher->get('distance_max');
+		if (is_integer($concept)){
+			
+		}else{
+			$concept=urldecode($concept);
+		}
 	}
 }
