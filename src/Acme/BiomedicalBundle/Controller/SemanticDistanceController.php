@@ -24,6 +24,10 @@ class SemanticDistanceController extends FOSRestController{
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique'));
 	}
 	
+	public function indexConceptAction(){
+		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
+	}
+	
 	/**
 	 * Calculate the distance between two concepts
 	 *

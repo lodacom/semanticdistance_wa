@@ -30,6 +30,6 @@ acme_biomedical_semantic_distance_two_concepts:
       
 acme_biomedical_semantic_distance_concept_dist:
     pattern:  /semantic_distance_concept
-    defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:index }
+    defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:indexConcept }
     requirements: 
       _method: GET
