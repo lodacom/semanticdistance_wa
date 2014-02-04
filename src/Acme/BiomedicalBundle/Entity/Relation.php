@@ -24,6 +24,11 @@ class Relation {
 	 * @ORM\Column(type="integer")
 	 */
 	protected $parent_concept_id;
+	
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $level;
 	public function getId() {
 		return $this->id;
 	}
@@ -45,5 +50,13 @@ class Relation {
 		$this->parent_concept_id = $parent_concept_id;
 		return $this;
 	}
+	public function getLevel() {
+		return $this->level;
+	}
+	public function setLevel($level) {
+		$this->level = $level;
+		return $this;
+	}
+	
 	
 }
