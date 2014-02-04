@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  *
- * @ORM\Table(name="obs_term")
+ * @ORM\Table(name="obs_relation")
  * @ORM\Entity
  */
-class Term {
+class Relation {
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="integer")
@@ -17,29 +17,18 @@ class Term {
 	 */
 	protected $id;
 	/**
-	 * @ORM\Column(type="string", length=246)
-	 */
-	protected $name;
-	/**
 	 * @ORM\Column(type="integer")
 	 */
 	protected $concept_id;
 	/**
-	 * @ORM\Column(type="boolean")
+	 * @ORM\Column(type="integer")
 	 */
-	protected $is_preferred;
+	protected $parent_concept_id;
 	public function getId() {
 		return $this->id;
 	}
 	public function setId($id) {
 		$this->id = $id;
-		return $this;
-	}
-	public function getName() {
-		return $this->name;
-	}
-	public function setName($name) {
-		$this->name = $name;
 		return $this;
 	}
 	public function getConceptId() {
@@ -49,16 +38,12 @@ class Term {
 		$this->concept_id = $concept_id;
 		return $this;
 	}
-	public function getIsPreferred() {
-		return $this->is_preferred;
+	public function getParentConceptId() {
+		return $this->parent_concept_id;
 	}
-	public function setIsPreferred($is_preferred) {
-		$this->is_preferred = $is_preferred;
+	public function setParentConceptId($parent_concept_id) {
+		$this->parent_concept_id = $parent_concept_id;
 		return $this;
 	}
-	
-
-	
-	
 	
 }

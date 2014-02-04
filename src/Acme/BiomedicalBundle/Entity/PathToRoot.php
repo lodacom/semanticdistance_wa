@@ -6,10 +6,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  *
- * @ORM\Table(name="obs_term")
+ * @ORM\Table(name="obs_path_to_root")
  * @ORM\Entity
  */
-class Term {
+class PathToRoot {
 	/**
 	 * @ORM\Id
 	 * @ORM\Column(type="integer")
@@ -17,29 +17,22 @@ class Term {
 	 */
 	protected $id;
 	/**
-	 * @ORM\Column(type="string", length=246)
-	 */
-	protected $name;
-	/**
 	 * @ORM\Column(type="integer")
 	 */
 	protected $concept_id;
 	/**
-	 * @ORM\Column(type="boolean")
+	 * @ORM\Column(type="string", length=512)
 	 */
-	protected $is_preferred;
+	protected $path_to_root;
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	protected $last_parent_processed;
 	public function getId() {
 		return $this->id;
 	}
 	public function setId($id) {
 		$this->id = $id;
-		return $this;
-	}
-	public function getName() {
-		return $this->name;
-	}
-	public function setName($name) {
-		$this->name = $name;
 		return $this;
 	}
 	public function getConceptId() {
@@ -49,16 +42,20 @@ class Term {
 		$this->concept_id = $concept_id;
 		return $this;
 	}
-	public function getIsPreferred() {
-		return $this->is_preferred;
+	public function getPathToRoot() {
+		return $this->path_to_root;
 	}
-	public function setIsPreferred($is_preferred) {
-		$this->is_preferred = $is_preferred;
+	public function setPathToRoot($path_to_root) {
+		$this->path_to_root = $path_to_root;
 		return $this;
 	}
-	
-
-	
+	public function getLastParentProcessed() {
+		return $this->last_parent_processed;
+	}
+	public function setLastParentProcessed($last_parent_processed) {
+		$this->last_parent_processed = $last_parent_processed;
+		return $this;
+	}
 	
 	
 }
