@@ -1,6 +1,7 @@
-{% extends 'AcmeBiomedicalBundle::main.html.twig' %} {% block content %}
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
+{% block content %}
 {{ parent() }}
-<form action="/search_semantic_distance" method="post">
+<form action="{{ path('acme_biomedical_sdtc') }}" method="post">
 	<fieldset>
 		<legend>Calculer la distance sémantique entre deux concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
@@ -11,4 +12,7 @@
 		<input class="home_button" type="submit" value="Calculer">	
 	</fieldset>
 </form>
+{% if distances is defined %}
+
+{% endif %}
 {% endblock %}

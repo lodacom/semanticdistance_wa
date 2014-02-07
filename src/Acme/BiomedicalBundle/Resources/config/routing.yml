@@ -33,3 +33,9 @@ acme_biomedical_semantic_distance_concept_dist:
     defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:indexConcept }
     requirements: 
       _method: GET
+      
+acme_biomedical_sdtc:
+    pattern:  /search_semantic_distance
+    defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:searchCalculateDistance }
+    requirements: 
+      _method: GET

@@ -15,6 +15,8 @@ use Acme\BiomedicalBundle\Entity\SemanticDistance;
 use Acme\BiomedicalBundle\Entity\Term;
 use Acme\BiomedicalBundle\Entity\Concept;
 use Acme\BiomedicalBundle\Model\SemanticDistanceCollection;
+use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\EventListener\ParamFetcherListener;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -26,6 +28,13 @@ class SemanticDistanceController extends FOSRestController{
 	
 	public function indexConceptAction(){
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
+	}
+	
+	public function searchCalculateDistanceAction(){
+		$concept_1=$_POST['concept_1'];
+		$concept_2=$_POST['concept_2'];
+		$results=$this->singleDistanceParam($concept_1, $concept_2);
+		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique','distances'=>$results));
 	}
 	
 	/**
@@ -53,33 +62,37 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
 		
+		return $this->singleDistanceParam($concept_1, $concept_2, $dist_id);
+	}
+	
+	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
 		if (is_integer($concept_1)&&is_integer($concept_2)){
 			if (isset($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
-				
+		
 				return $this->singleDistance($recup_id);
 			}else{
 				$distances=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
 				return $distances;
-			}	
+			}
 		}else{
 			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
 			->findOneBy(array('full_id'=>urldecode($concept_1)));
 			$concept_2_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
 			->findOneBy(array('full_id'=>urldecode($concept_2)));
-			
+				
 			if (isset($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
-				
+		
 				return $this->singleDistance($recup_id_2);
 			}else{
 				$distances=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
 				return $distances;
-			}	
+			}
 		}
 	}
 	
