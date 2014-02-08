@@ -33,7 +33,37 @@ class SemanticDistanceController extends FOSRestController{
 	public function searchCalculateDistanceAction(){
 		$concept_1=$_POST['concept_1'];
 		$concept_2=$_POST['concept_2'];
-		$results=$this->singleDistanceParam($concept_1, $concept_2);
+		$ontology=$_POST['ontology'];
+		
+		$quer = $this->getDoctrine()->getEntityManager();
+		$query=$quer->createQuery("SELECT c.id
+				FROM AcmeBiomedicalBundle:Ontology o,AcmeBiomedicalBundle:Term t,AcmeBiomedicalBundle:Concept c
+				WHERE t.name=?1 
+				AND t.concept_id=c.id 
+				AND c.ontology_id=o.id 
+				AND o.name=?2 ")
+				->setParameters(array(1=>$concept_1,2=>$ontology));
+		$recup = $query->getArrayResult();
+		$concepts_1=array();
+		foreach ( $recup as $data ) {
+			$concepts_1[] = $data ['id'];
+		}
+		
+		$quer = $this->getDoctrine()->getEntityManager();
+		$query=$quer->createQuery("SELECT c.id
+				FROM AcmeBiomedicalBundle:Ontology o,AcmeBiomedicalBundle:Term t,AcmeBiomedicalBundle:Concept c
+				WHERE t.name=?1
+				AND t.concept_id=c.id
+				AND c.ontology_id=o.id
+				AND o.name=?2 ")
+						->setParameters(array(1=>$concept_2,2=>$ontology));
+		$recup = $query->getArrayResult();
+		$concepts_2=array();
+		foreach ( $recup as $data ) {
+			$concepts_2[] = $data ['id'];
+		}
+		
+		$results=$this->singleDistanceParam($concepts_1[0], $concepts_2[0]);
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique','distances'=>$results));
 	}
 	
@@ -84,9 +114,10 @@ class SemanticDistanceController extends FOSRestController{
 				$distances=$this->singleDistance($recup_id);
 				return $distances;
 			}else{
-				$distances=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+				$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
-				return $distances;
+				
+				return $distances_2;
 			}
 		}else{
 			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")

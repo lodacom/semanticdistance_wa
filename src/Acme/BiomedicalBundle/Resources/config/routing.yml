@@ -55,4 +55,4 @@ acme_biomedical_sdtc:
     pattern:  /search_semantic_distance
     defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:searchCalculateDistance }
     requirements: 
-      _method: GET
+      _method: POST

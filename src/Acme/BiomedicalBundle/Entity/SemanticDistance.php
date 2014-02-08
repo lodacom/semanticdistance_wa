@@ -25,19 +25,19 @@ class SemanticDistance {
 	 */
 	protected $concept_2;
 	/**
-	 * @ORM\Column(type="decimal", scale=2)
+	 * @ORM\Column(type="decimal", precision=4, scale=2)
 	 */
 	protected $sim_lin;
 	/**
-	 * @ORM\Column(type="decimal", scale=2)
+	 * @ORM\Column(type="decimal", precision=4, scale=2)
 	 */
 	protected $sim_wu_palmer;
 	/**
-	 * @ORM\Column(type="decimal", scale=2)
+	 * @ORM\Column(type="decimal", precision=4, scale=2)
 	 */
 	protected $sim_resnik;
 	/**
-	 * @ORM\Column(type="decimal", scale=2)
+	 * @ORM\Column(type="decimal", precision=4, scale=2)
 	 */
 	protected $sim_schlicker;
 	public function getId() {

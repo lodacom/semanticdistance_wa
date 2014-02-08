@@ -80,6 +80,11 @@
 	</fieldset>
 </form>
 {% if distances is defined %}
-
+<pre>
+Distance de Lin: {{ distances.getSimLin() }}
+Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}
+Distance de Resnik: {{ distances.getSimResnik() }}
+Distance de Schlicker: {{ distances.getSimSchlicker() }}
+</pre>
 {% endif %}
 {% endblock %}
