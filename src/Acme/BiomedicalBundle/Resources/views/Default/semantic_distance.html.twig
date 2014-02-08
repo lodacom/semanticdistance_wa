@@ -1,4 +1,49 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
+{% block javascripts %}
+	{{ parent() }}
+<script charset="utf-8">
+  		$(function() {
+  			$('#concept_1').autocomplete({
+        		source : function(requete, reponse){
+            	var motcle = $('#concept_1').val();
+            	var objData = {};
+            	objData = { search: motcle };
+            	$.ajax({
+                	type:"POST",
+                	url : "{{path('acme_biomedical_search')}}",
+                	dataType : 'json',
+                	data : objData,
+ 
+                	success : function(donnee){
+                    	reponse($.map(donnee, function(objet){
+                        	return objet;
+                    	}));
+                	}
+            	});
+        		}
+    		});
+  			$('#ontology').autocomplete({
+        		source : function(requete, reponse){
+            	var motcle = $('#concept_1').val()+"/"+$('#ontology').val();
+            	var objData = {};
+            	objData = { search: motcle };
+            	$.ajax({
+                	type:"POST",
+                	url : "{{path('acme_biomedical_search_ontology_with_concept')}}",
+                	dataType : 'json',
+                	data : objData,
+ 
+                	success : function(donnee){
+                    	reponse($.map(donnee, function(objet){
+                        	return objet;
+                    	}));
+                	}
+            	});
+        		}
+    		});
+    	});
+  		</script>
+{% endblock %}
 {% block content %}
 {{ parent() }}
 <form action="{{ path('acme_biomedical_sdtc') }}" method="post">
@@ -6,6 +51,9 @@
 		<legend>Calculer la distance sémantique entre deux concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
 			value="Entrer un concept, ex Melanoma" /> 
+		<label for="ontology">Ontologies contenant les deux concepts:</label>	
+		<input type="text" id="ontology" name="ontology"
+			value="Entrer un nom d'ontology, ex NCI Thesaurus" />	
 		<input type="text"
 			id="concept_2" name="concept_2"
 			value="Entrer un concept, ex Melanoma" />
