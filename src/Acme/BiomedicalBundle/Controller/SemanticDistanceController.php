@@ -66,7 +66,7 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
-		if (is_integer($concept_1)&&is_integer($concept_2)){
+		if (preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2)){
 			if (isset($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
