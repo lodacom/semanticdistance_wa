@@ -1,7 +1,7 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
 {% block javascripts %}
 	{{ parent() }}
-<script charset="utf-8">
+<script>
   		$(function() {
   			$('#concept_1').autocomplete({
         		source : function(requete, reponse){
@@ -29,7 +29,26 @@
             	objData = { search: motcle };
             	$.ajax({
                 	type:"POST",
-                	url : "{{path('acme_biomedical_search_ontology_with_concept')}}",
+                	url : "{{path('acme_biomedical_search_ontology_with_term')}}",
+                	dataType : 'json',
+                	data : objData,
+ 
+                	success : function(donnee){
+                    	reponse($.map(donnee, function(objet){
+                        	return objet;
+                    	}));
+                	}
+            	});
+        		}
+    		});
+  			$('#concept_2').autocomplete({
+        		source : function(requete, reponse){
+            	var motcle = $('#concept_2').val()+"/"+$('#ontology').val();
+            	var objData = {};
+            	objData = { search: motcle };
+            	$.ajax({
+                	type:"POST",
+                	url : "{{path('acme_biomedical_search_term_with_ontology')}}",
                 	dataType : 'json',
                 	data : objData,
  
@@ -42,7 +61,7 @@
         		}
     		});
     	});
-  		</script>
+</script>
 {% endblock %}
 {% block content %}
 {{ parent() }}

@@ -24,6 +24,12 @@ class DefaultController extends Controller
     	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','results'=>$truc));
     }
     
+    /**
+     * Fonction permettant d'effectuer l'autocomplétion pour la page 
+     * semantic_distance.html.twig et index.html.twig .
+     * Permet de chercher tous les termes possibles.
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showConceptsAction(){
         $request = $this->get('request');
          
@@ -60,6 +66,12 @@ class DefaultController extends Controller
         }
     }
     
+    /**
+     * Fonction permettant d'effectuer l'autocomplétion pour la page 
+     * semantic_distance.html.twig . Etant donner un terme donné et
+     * une ontologie.Ici on cherche une ontologie.
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showOntologiesWithConceptAction(){
     	$request = $this->get('request');
     	 
@@ -93,6 +105,50 @@ class DefaultController extends Controller
     	}
     }
     
+    /**
+     * Fonction permettant d'effectuer l'autocomplétion pour la page
+     * semantic_distance.html.twig . Etant donner un terme donné et
+     * une ontologie.Ici on cherche un terme appartenant à une ontologie connue.
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function showConceptsWithOntologyAction(){
+    	$request = $this->get('request');
+    
+    	if($request->isXmlHttpRequest()){
+    		$term_ontology = $request->request->get('search');
+    		$tab=split("/",$term_ontology);
+    		$term=$tab[0];
+    		$ontology=$tab[1];
+    
+    		$quer = $this->getDoctrine()->getEntityManager();
+    		$query=$quer->createQuery("SELECT t.name
+            		FROM AcmeBiomedicalBundle:Ontology o,AcmeBiomedicalBundle:Term t,AcmeBiomedicalBundle:Concept c
+            		WHERE o.name=?1
+    				AND t.name LIKE ?2
+    				AND t.concept_id=c.id
+    				AND c.ontology_id=o.id
+    				ORDER BY t.name ASC")
+        				->setParameters(array(1=>$ontology,2=>"%".$term."%"))
+        				->setMaxResults(10);
+    		$recup = $query->getArrayResult();
+    		$concepts=array();
+    		foreach ( $recup as $data ) {
+    			$concepts[] = $data ['name'];
+    		}
+    		if (count($recup)==0){
+    			array_push($concepts, "Aucune proposition");
+    		}
+    		$response = new Response(json_encode($concepts));
+    		$response->headers->set('Content-Type', 'application/json');
+    		return $response;
+    	}
+    }
+    
+    /**
+     * Fonction permettant d'effectuer l'autocomplétion pour la page 
+     * index.html.twig . Permet de chercher toutes les ontologies.
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showOntologiesAction(){
     	$request = $this->get('request');
     	
