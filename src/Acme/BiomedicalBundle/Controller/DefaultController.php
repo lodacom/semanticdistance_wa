@@ -31,16 +31,18 @@ class DefaultController extends Controller
             $term = $request->request->get('search');
             
             $quer = $this->getDoctrine()->getEntityManager();
-            $query=$quer->createQuery("SELECT t.name
-            		FROM AcmeBiomedicalBundle:Term t
+            $query=$quer->createQuery("SELECT t.name as term,o.name as ontology
+            		FROM AcmeBiomedicalBundle:Term t, AcmeBiomedicalBundle:Concept c,AcmeBiomedicalBundle:Ontology o
             		WHERE t.name LIKE ?1
+            		AND t.concept_id=c.id
+            		AND c.ontology_id=o.id
             		ORDER BY t.name ASC")
             ->setParameter(1,$term."%")
             ->setMaxResults(10);
             $recup = $query->getArrayResult();
             $concepts=array();
 			foreach ( $recup as $data ) {
-				$concepts[] = $data ['definition'];
+				$concepts[] = $data ['term']." (".$data ['ontology'].")";
 			}
 			if (count($recup)==0){
 				array_push($concepts, "Aucune proposition");
