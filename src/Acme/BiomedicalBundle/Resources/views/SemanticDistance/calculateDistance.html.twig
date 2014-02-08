@@ -4,5 +4,13 @@ Distance entre deux concepts
 {% endblock %}
 {% block content %}
 {{ parent() }}
-
+<p>
+<span id="concepts">Distances entre {{ distances.getConcept1() }} et {{ distances.getConcept2() }}</span>
+</p>
+<pre>
+Distance de Lin: {{ distances.getSimLin() }}
+Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}
+Distance de Resnik: {{ distances.getSimResnik() }}
+Distance de Schlicker: {{ distances.getSimSchlicker() }}
+</pre>
 {% endblock %}

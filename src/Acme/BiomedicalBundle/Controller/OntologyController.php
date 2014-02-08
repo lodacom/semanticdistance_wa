@@ -57,7 +57,7 @@ class OntologyController extends FOSRestController{
 	 *   output = "Acme\BiomedicalBundle\Entity\Ontology",
 	 *   statusCodes = {
 	 *     200 = "Returned when successful",
-	 *     404 = "Returned when the note is not found"
+	 *     404 = "Returned when the ontology is not found"
 	 *   }
 	 * )
 	 *
