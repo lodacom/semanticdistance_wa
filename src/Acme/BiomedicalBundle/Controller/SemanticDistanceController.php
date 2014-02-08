@@ -35,20 +35,15 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_2=$_POST['concept_2'];
 		$ontology=$_POST['ontology'];
 		
-		$quer = $this->getDoctrine()->getEntityManager();
-		$query=$quer->createQuery("SELECT c.id
-				FROM AcmeBiomedicalBundle:Ontology o,AcmeBiomedicalBundle:Term t,AcmeBiomedicalBundle:Concept c
-				WHERE t.name=?1 
-				AND t.concept_id=c.id 
-				AND c.ontology_id=o.id 
-				AND o.name=?2 ")
-				->setParameters(array(1=>$concept_1,2=>$ontology));
-		$recup = $query->getArrayResult();
-		$concepts_1=array();
-		foreach ( $recup as $data ) {
-			$concepts_1[] = $data ['id'];
-		}
+		$concept_1=$this->getSemSimId($concept_1, $ontology);
+		$concept_2=$this->getSemSimId($concept_2, $ontology);
 		
+		$results=$this->singleDistanceParam($concept_1, $concept_2);
+		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique','distances'=>$results));
+	}
+	
+	
+	private function getSemSimId($concept,$ontology){
 		$quer = $this->getDoctrine()->getEntityManager();
 		$query=$quer->createQuery("SELECT c.id
 				FROM AcmeBiomedicalBundle:Ontology o,AcmeBiomedicalBundle:Term t,AcmeBiomedicalBundle:Concept c
@@ -56,15 +51,13 @@ class SemanticDistanceController extends FOSRestController{
 				AND t.concept_id=c.id
 				AND c.ontology_id=o.id
 				AND o.name=?2 ")
-						->setParameters(array(1=>$concept_2,2=>$ontology));
+						->setParameters(array(1=>$concept,2=>$ontology));
 		$recup = $query->getArrayResult();
-		$concepts_2=array();
+		$concepts=array();
 		foreach ( $recup as $data ) {
-			$concepts_2[] = $data ['id'];
+			$concepts[] = $data ['id'];
 		}
-		
-		$results=$this->singleDistanceParam($concepts_1[0], $concepts_2[0]);
-		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique','distances'=>$results));
+		return array_pop($concepts);
 	}
 	
 	/**
@@ -107,7 +100,9 @@ class SemanticDistanceController extends FOSRestController{
 	 * @return \Acme\BiomedicalBundle\Entity\SemanticDistance
 	 */
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
-		if (preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2)){
+		\Doctrine\Common\Util\Debug::dump($concept_1);
+		\Doctrine\Common\Util\Debug::dump($concept_2);
+		if ((preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2))||(is_int($concept_1)&&is_int($concept_2))){
 			if (isset($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
@@ -120,22 +115,39 @@ class SemanticDistanceController extends FOSRestController{
 				return $distances_2;
 			}
 		}else{
-			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>urldecode($concept_1)));
+			$concept_1_id=$this->retreiveConceptId($concept_1);
+			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));
+			/*$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			->findOneBy(array('full_id'=>$concept_1));
 			$concept_2_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>urldecode($concept_2)));
-				
+			->findOneBy(array('full_id'=>$concept_2));*/
+			\Doctrine\Common\Util\Debug::dump($concept_1_id);
 			if (isset($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
 				$distances=$this->singleDistance($recup_id_2);
 				return $distances;
 			}else{
-				$distances=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
-				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
-				return $distances;
+				$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+				->findOneBy(array('concept_1'=>$concept_1_id[0]->getId(),'concept_2'=>$concept_2_id[0]->getId()));
+				return $distances_4;
 			}
 		}
+	}
+	
+	private function retreiveConceptId($concept){
+		$em=$this->getDoctrine()->getEntityManager();
+		$query=$em->createQuery("SELECT c.id
+				FROM AcmeBiomedicalBundle:Concept c
+				WHERE c.full_id= :id")
+				->setParameter("id", $concept);
+		$recup = $query->getArrayResult();
+		$id=array();
+		foreach ( $recup as $data ) {
+			array_push($id, $data['id']);
+		}
+
+		return array_pop($id);
 	}
 	
 	/**
