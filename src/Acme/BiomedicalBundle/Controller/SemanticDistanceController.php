@@ -30,6 +30,10 @@ class SemanticDistanceController extends FOSRestController{
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
 	}
 	
+	/**
+	 * Permet de faire l'affichage pour l'interface web
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
 	public function searchCalculateDistanceAction(){
 		$concept_1=$_POST['concept_1'];
 		$concept_2=$_POST['concept_2'];
@@ -46,7 +50,6 @@ class SemanticDistanceController extends FOSRestController{
 					'ontology'=>$ontology,
 					'concept_2'=>$_POST['concept_2']));
 	}
-	
 	
 	private function getSemSimId($concept,$ontology){
 		$quer = $this->getDoctrine()->getEntityManager();
