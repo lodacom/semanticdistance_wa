@@ -91,11 +91,13 @@
 	</fieldset>
 </form>
 {% if distances is defined %}
-<pre>
-Distance de Lin: {{ distances.getSimLin() }}
-Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}
-Distance de Resnik: {{ distances.getSimResnik() }}
-Distance de Schlicker: {{ distances.getSimSchlicker() }}
-</pre>
+	{% if distances is not null %}
+	Distance de Lin: {{ distances.getSimLin() }}<br>
+	Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}<br>
+	Distance de Resnik: {{ distances.getSimResnik() }}<br>
+	Distance de Schlicker: {{ distances.getSimSchlicker() }}<br>
+	{% else %}
+	Il n'y a pas de données pour ces deux concepts<br>
+	{% endif %}
 {% endif %}
 {% endblock %}
