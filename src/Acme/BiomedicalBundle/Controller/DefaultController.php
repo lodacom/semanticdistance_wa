@@ -128,7 +128,7 @@ class DefaultController extends Controller
     				AND t.concept_id=c.id
     				AND c.ontology_id=o.id
     				ORDER BY t.name ASC")
-        				->setParameters(array(1=>$ontology,2=>"%".$term."%"))
+        				->setParameters(array(1=>$ontology,2=>$term."%"))
         				->setMaxResults(10);
     		$recup = $query->getArrayResult();
     		$concepts=array();

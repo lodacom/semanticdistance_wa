@@ -69,12 +69,24 @@
 	<fieldset>
 		<legend>Calculer la distance sémantique entre deux concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
-			value="Entrer un concept, ex Melanoma" /> 
+			{% if concept_1 is defined %}
+			value="{{ concept_1 }}" 
+			{% else %}
+			value="Entrer un concept, ex Melanoma" 
+			{% endif %}/> 
 		<label for="ontology">Ontologies contenant les deux concepts:</label>	
 		<input type="text" id="ontology" name="ontology"
-			value="Entrer un nom d'ontology, ex NCI Thesaurus" />	
+			{% if ontology is defined %}
+			value="{{ ontology }}" 
+			{% else %}
+			value="Entrer un nom d'ontology, ex NCI Thesaurus" 
+			{% endif %}/>	
 		<input type="text" id="concept_2" name="concept_2"
-			value="Entrer un concept, ex Melanoma" />
+			{% if concept_2 is defined %}
+			value="{{ concept_2 }}" 
+			{% else %}
+			value="Entrer un concept, ex Melanoma" 
+			{% endif %} />
 		<input class="home_button" type="submit" value="Calculer">	
 	</fieldset>
 </form>

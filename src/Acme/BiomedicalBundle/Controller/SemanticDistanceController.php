@@ -39,7 +39,12 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_2=$this->getSemSimId($concept_2, $ontology);
 		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
-		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique','distances'=>$results));
+		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',
+				array('title'=>'Distance sémantique',
+					'distances'=>$results,
+					'concept_1'=>$_POST['concept_1'],
+					'ontology'=>$ontology,
+					'concept_2'=>$_POST['concept_2']));
 	}
 	
 	
@@ -97,11 +102,9 @@ class SemanticDistanceController extends FOSRestController{
 	 * @param string $concept_1
 	 * @param string $concept_2
 	 * @param string $dist_id
-	 * @return \Acme\BiomedicalBundle\Entity\SemanticDistance
+	 * @return object \Acme\BiomedicalBundle\Entity\SemanticDistance
 	 */
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
-		\Doctrine\Common\Util\Debug::dump($concept_1);
-		\Doctrine\Common\Util\Debug::dump($concept_2);
 		if ((preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2))||(is_int($concept_1)&&is_int($concept_2))){
 			if (isset($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
@@ -189,7 +192,8 @@ class SemanticDistanceController extends FOSRestController{
 	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", description="The maximum distance to search.")
 	 * @Annotations\View()
 	 *
-	 *	@param integer     $concept      the concept id or the URI of concept    
+	 *	@param integer     $concept      the concept id or the URI of concept  
+	 *  
 	 * @return array
 	 */
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
