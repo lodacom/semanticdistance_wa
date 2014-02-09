@@ -106,26 +106,26 @@ class SemanticDistanceController extends FOSRestController{
 			if (isset($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
-				$distances=$this->singleDistance($recup_id);
-				return $distances;
+				$distances=$this->singleDistance($recup_id,$dist_id);
+				return $distances;//OK fonctionne
 			}else{
 				$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
 				
-				return $distances_2;
+				return $distances_2;//OK fonctionne
 			}
 		}else{
-			$concept_1_id=$this->retreiveConceptId($concept_1);
-			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));
-			/*$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>$concept_1));
+			/*$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
+			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));*/
+			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			->findOneBy(array('full_id'=>urldecode($concept_1)));
 			$concept_2_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>$concept_2));*/
+			->findOneBy(array('full_id'=>urldecode($concept_2)));
 			\Doctrine\Common\Util\Debug::dump($concept_1_id);
 			if (isset($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
-				$distances=$this->singleDistance($recup_id_2);
+				$distances=$this->singleDistance($recup_id_2,$dist_id);
 				return $distances;
 			}else{
 				$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
@@ -155,10 +155,11 @@ class SemanticDistanceController extends FOSRestController{
 	 * @param SemanticDistance $recup_id
 	 * @return \Acme\BiomedicalBundle\Entity\SemanticDistance
 	 */
-	private function singleDistance(SemanticDistance $recup_id){
+	private function singleDistance(SemanticDistance $recup_id,$dist_id){
 		$distances=new SemanticDistance();
 		$distances->setConcept1($recup_id->getConcept1());
 		$distances->setConcept2($recup_id->getConcept2());
+		$distances->setId($recup_id->getId());
 		
 		switch ($dist_id){
 			case 1: $distances->setSimLin($recup_id->getSimLin());
