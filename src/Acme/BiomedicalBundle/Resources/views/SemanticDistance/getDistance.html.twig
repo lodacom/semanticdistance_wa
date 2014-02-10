@@ -5,11 +5,11 @@ pour la distance {{ distances.dist_id }} du concept z
 {% endblock %}
 {% block content %}
 {{ parent() }}
+	<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
+pour la distance {{ distances.dist_id }} du concept z</h4>
 	{% for term_concepts in distances.semantic_distances %}
-		{% for term_concept in term_concepts %}
-			<a href="{{ term_concept.getConcept().getFullId() }}">
-			{{ term_concept.getTerm().getName() }}
-			</a>
-		{% endfor %}
+			<p><a href="{{ term_concepts.getConcept().getFullId() }}">
+			{{ term_concepts.getTerm().getName() }}
+			</a></p>
 	{% endfor %}
 {% endblock %}

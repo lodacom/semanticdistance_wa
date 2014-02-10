@@ -205,7 +205,7 @@ class SemanticDistanceController extends FOSRestController{
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
-		\Doctrine\Common\Util\Debug::dump($distance_max);
+		//\Doctrine\Common\Util\Debug::dump($distance_max);
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
 			
 			return $this->multiDistances($dist_id, $distance_max, $concept);
@@ -237,10 +237,11 @@ class SemanticDistanceController extends FOSRestController{
 					WHERE sd.".$dist_id."<= :distance
 					AND sd.concept_1 = :id
 					ORDER BY sd.".$dist_id." ASC")
-							->setParameters(array("distance"=>0.4,"id"=>$concept));
+							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
 		foreach ( $recup as $data ) {
+			$concept_1=;
 			$full_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
 			->find($data ['concept_2']);
 			$nom=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
