@@ -3,6 +3,7 @@
 namespace Acme\BiomedicalBundle\Model;
 
 use Acme\BiomedicalBundle\Model\TermConcept;
+use Acme\BiomedicalBundle\Entity\Term;
 
 class SemanticDistanceCollection {
 	/**
@@ -19,6 +20,11 @@ class SemanticDistanceCollection {
 	 * @var integer
 	 */
 	public $distance_max;
+	/**
+	 * 
+	 * @var Term
+	 */
+	public $concept_1;
 	
 	/**
 	 * @param TermConcept[]  $semantic_distances

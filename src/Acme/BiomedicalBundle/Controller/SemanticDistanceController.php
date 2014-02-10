@@ -81,8 +81,8 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|\w+)", description="First id concept to compare.Or the URI of concept 1")
-	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|\w+)", description="Second id concept to compare.Or the URI of concept 2")
+	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|.+)", description="First id concept to compare.Or the URI of concept 1")
+	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|.+)", description="Second id concept to compare.Or the URI of concept 2")
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *
@@ -122,22 +122,17 @@ class SemanticDistanceController extends FOSRestController{
 				return $distances_2;//OK fonctionne
 			}
 		}else{
-			/*$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
-			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));*/
-			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>urldecode($concept_1)));
-			$concept_2_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>urldecode($concept_2)));
-			\Doctrine\Common\Util\Debug::dump($concept_1_id);
+			$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
+			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));
 			if (isset($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
-				->findOneBy(array('concept_1'=>$concept_1_id->getId(),'concept_2'=>$concept_2_id->getId()));
+				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
 				$distances=$this->singleDistance($recup_id_2,$dist_id);
-				return $distances;
+				return $distances;//OK fonctionne
 			}else{
 				$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
-				->findOneBy(array('concept_1'=>$concept_1_id[0]->getId(),'concept_2'=>$concept_2_id[0]->getId()));
-				return $distances_4;
+				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
+				return $distances_4;//OK fonctionne
 			}
 		}
 	}
@@ -195,7 +190,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
-	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", description="The maximum distance to search.")
+	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+|\d+.\d+)", description="The maximum distance to search.")
 	 * @Annotations\View(templateVar="distances")
 	 *
 	 *	@param integer     $concept      the concept id or the URI of concept  
@@ -241,7 +236,9 @@ class SemanticDistanceController extends FOSRestController{
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
 		foreach ( $recup as $data ) {
-			$concept_1=;
+			$concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+			->findOneBy(array('concept_id'=>$data ['concept_1']));
+			$dist_array->concept_1=$concept_1;
 			$full_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
 			->find($data ['concept_2']);
 			$nom=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
