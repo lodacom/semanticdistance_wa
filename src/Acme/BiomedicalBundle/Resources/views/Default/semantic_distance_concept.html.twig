@@ -13,28 +13,54 @@ $(function() {
       }
     });
     $( "#distance_max" ).val( $( "#slider-range-max" ).slider( "value" ) );
+    $('#concept_1').autocomplete({
+		source : function(requete, reponse){
+    	var motcle = $('#concept_1').val();
+    	var objData = {};
+    	objData = { search: motcle };
+    	$.ajax({
+        	type:"POST",
+        	url : "{{path('acme_biomedical_search')}}",
+        	dataType : 'json',
+        	data : objData,
+
+        	success : function(donnee){
+            	reponse($.map(donnee, function(objet){
+                	return objet;
+            	}));
+        	}
+    	});
+		}
+	});
   });
 </script>
 {% endblock %}
 {% block content %}
 {{ parent() }}
-<form action="/search_semantic_distance" method="post">
+<form action="{{ path('acme_biomedical_all_concepts_in_distance') }}" method="post">
 	<fieldset>
 		<legend>Trouver tous les concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
 			value="Entrer un concept, ex Melanoma" /> 
 		<label for="dist_id">Distance sémantique:</label>	
 		<select name="dist_id" id="dist_id">
-			<option value="sim_lin">Lin</option>
-			<option value="sim_wu_palmer">Wu/Palmer</option>
-			<option value="sim_resnik">Resnik</option>
-			<option value="sim_schlicker">Schlicker</option>
+			<option value="1">Lin</option>
+			<option value="2">Wu/Palmer</option>
+			<option value="3">Resnik</option>
+			<option value="4">Schlicker</option>
 		</select>
 		<label for="distance_max">Distance maximale:</label>
-		<input type="number" id="distance_max" style="border:0; color:#f6931f; font-weight:bold;"/>
+		<input type="number" id="distance_max" name="distance_max" style="border:0; color:#f6931f; font-weight:bold;"/>
 		<div id="slider-range-max" style="width:300px;float: right;margin-right: 45%"></div>
 		<br>
 		<input class="home_button" type="submit" value="Chercher"/>	
 	</fieldset>
 </form>
+{% if distances is defined %}
+	{% for term_concepts in distances.semantic_distances %}
+				<p><a href="{{ term_concepts.getConcept().getFullId() }}">
+				{{ term_concepts.getTerm().getName() }}
+				</a></p>
+	{% endfor %}
+{% endif %}
 {% endblock %}

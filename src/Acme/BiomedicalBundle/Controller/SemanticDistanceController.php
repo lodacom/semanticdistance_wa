@@ -52,6 +52,44 @@ class SemanticDistanceController extends FOSRestController{
 					'concept_2'=>$_POST['concept_2']));
 	}
 	
+	public function searchConceptsInDistanceAction(){
+		$concept_1=$_POST['concept_1'];
+		$dist_id=$_POST['dist_id'];
+		$distance_max=$_POST['distance_max'];
+		$recup=$this->getConceptIdByName($concept_1);
+		\Doctrine\Common\Util\Debug::dump($dist_id." ".$recup);
+		/*switch ($dist_id){
+			case 1: $distance_max;
+			break;
+			case 2:$distances->setSimWuPalmer($recup_id->getSimWuPalmer());
+			break;
+			case 3:$distances->setSimResnik($recup_id->getSimResnik());
+			break;
+			case 4:$distances->setSimSchlicker($recup_id->getSimSchlicker());
+			break;
+		}*/
+		
+		$results=$this->multiDistances($dist_id, 0.6, $recup);
+		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
+				array('title'=>'Distance sémantique',
+				'distances'=>$results));
+	}
+	
+	private function getConceptIdByName($concept){
+		$em=$this->getDoctrine()->getEntityManager();
+		$query=$em->createQuery("SELECT t.id
+				FROM AcmeBiomedicalBundle:Term t
+				WHERE t.name= :name")
+						->setParameter("name", $concept);
+		$recup = $query->getArrayResult();
+		$id=array();
+		foreach ( $recup as $data ) {
+			array_push($id, $data['id']);
+		}
+		
+		return array_pop($id);
+	}
+	
 	private function getSemSimId($concept,$ontology){
 		$quer = $this->getDoctrine()->getEntityManager();
 		$query=$quer->createQuery("SELECT c.id
