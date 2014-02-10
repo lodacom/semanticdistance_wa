@@ -1,0 +1,15 @@
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %}
+{% block  title %}
+Concepts se trouvant à une distance de {{ distances.distance_max }} 
+pour la distance {{ distances.dist_id }} du concept z
+{% endblock %}
+{% block content %}
+{{ parent() }}
+	{% for term_concepts in distances.semantic_distances %}
+		{% for term_concept in term_concepts %}
+			<a href="{{ term_concept.getConcept().getFullId() }}">
+			{{ term_concept.getTerm().getName() }}
+			</a>
+		{% endfor %}
+	{% endfor %}
+{% endblock %}

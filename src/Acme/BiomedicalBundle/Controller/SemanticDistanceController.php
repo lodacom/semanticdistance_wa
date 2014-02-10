@@ -17,6 +17,7 @@ use Acme\BiomedicalBundle\Entity\Concept;
 use Acme\BiomedicalBundle\Model\SemanticDistanceCollection;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\EventListener\ParamFetcherListener;
+use Acme\BiomedicalBundle\Model\TermConcept;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -185,24 +186,27 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 * @ApiDoc(
 	 *   resource = true,
+	 *   output = "Acme\BiomedicalBundle\Model\SemanticDistanceCollection",
 	 *   statusCodes = {
-	 *     200 = "Returned when successful"
+	 *     200 = "Returned when successful",
+	 *     404 = "Returned when concept doesn't exist"
 	 *   }
 	 * )
 	 *
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *	@Annotations\QueryParam(name="distance_max", requirements="\d+", description="The maximum distance to search.")
-	 * @Annotations\View()
+	 * @Annotations\View(templateVar="distances")
 	 *
 	 *	@param integer     $concept      the concept id or the URI of concept  
 	 *  
-	 * @return array
+	 * @return object
 	 */
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
-		if (is_integer($concept)){
+		\Doctrine\Common\Util\Debug::dump($distance_max);
+		if (is_int($concept)||preg_match("[\d+]", $concept)){
 			
 			return $this->multiDistances($dist_id, $distance_max, $concept);
 		}else{
@@ -233,16 +237,17 @@ class SemanticDistanceController extends FOSRestController{
 					WHERE sd.".$dist_id."<= :distance
 					AND sd.concept_1 = :id
 					ORDER BY sd.".$dist_id." ASC")
-							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
+							->setParameters(array("distance"=>0.4,"id"=>$concept));
 		$recup = $query->getArrayResult();
-		$dist_array=array();
+		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
 		foreach ( $recup as $data ) {
-			$semantic_dist=new SemanticDistance();
-			$semantic_dist->setConcept1($data ['concept_1']);
-			$semantic_dist->setConcept1($data ['concept_2']);
-			$semantic_dist->setConcept1($data [$dist_id]);
-			array_push($dist_array, $semantic_dist);
+			$full_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			->find($data ['concept_2']);
+			$nom=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+			->findOneBy(array('concept_id'=>$data ['concept_2']));
+			$term_concept=new TermConcept($nom, $full_id);
+			$dist_array->ajouterTermConcept($term_concept);
 		}
-		return new SemanticDistanceCollection($dist_array);
+		return $dist_array;
 	}
 }
