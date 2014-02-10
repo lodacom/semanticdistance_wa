@@ -137,6 +137,11 @@ class SemanticDistanceController extends FOSRestController{
 		}
 	}
 	
+	/**
+	 * 
+	 * @param string $concept l'URI du concept
+	 * @return mixed l'identifiant du concept
+	 */
 	private function retreiveConceptId($concept){
 		$em=$this->getDoctrine()->getEntityManager();
 		$query=$em->createQuery("SELECT c.id
@@ -191,26 +196,29 @@ class SemanticDistanceController extends FOSRestController{
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+|\d+.\d+)", description="The maximum distance to search.")
+	 * @Annotations\QueryParam(name="concept_1", requirements=".+", nullable=true, description="URI of concept.Should be 
+	 * mandatory if you want to serach by URI ")
+	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
-	 *	@param integer     $concept      the concept id or the URI of concept  
+	 *	@param integer     $concept      the concept id or if you want the URI string if you want to pass an URI 
 	 *  
 	 * @return object
 	 */
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
-		//\Doctrine\Common\Util\Debug::dump($distance_max);
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
 			
 			return $this->multiDistances($dist_id, $distance_max, $concept);
 		}else{
-			$concept_1=urldecode($concept);
-			$concept_1_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
-			->findOneBy(array('full_id'=>urldecode($concept_1)));
-			$concept_id=$concept_1_id->getId();
+			if (preg_match("[URI]", $concept)){
+				$concept_recup=$paramFetcher->get('concept_1');
+				$concept_1=urldecode($concept_recup);
+				$concept_id=$this->retreiveConceptId($concept_1);
 			
-			return $this->multiDistances($dist_id, $distance_max, $concept_id);
+				return $this->multiDistances($dist_id, $distance_max, $concept_id);
+			}
 		}
 	}
 	
