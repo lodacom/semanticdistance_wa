@@ -18,6 +18,8 @@ use Acme\BiomedicalBundle\Model\SemanticDistanceCollection;
 use FOS\RestBundle\Request\ParamFetcher;
 use FOS\RestBundle\EventListener\ParamFetcherListener;
 use Acme\BiomedicalBundle\Model\TermConcept;
+use Acme\BiomedicalBundle\Model\BioPortalApiRest;
+use Acme\BiomedicalBundle\Entity\Ontology;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -57,7 +59,7 @@ class SemanticDistanceController extends FOSRestController{
 		$dist_id=$_POST['dist_id'];
 		$distance_max=$_POST['distance_max'];
 		$recup=$this->getConceptIdByName($concept_1);
-		\Doctrine\Common\Util\Debug::dump($dist_id." ".$recup);
+		//\Doctrine\Common\Util\Debug::dump($dist_id." ".$recup);
 		/*switch ($dist_id){
 			case 1: $distance_max;
 			break;
@@ -278,6 +280,7 @@ class SemanticDistanceController extends FOSRestController{
 					WHERE sd.".$dist_id."<= :distance
 					AND sd.concept_1 = :id
 					ORDER BY sd.".$dist_id." ASC")
+							->setMaxResults(10)
 							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
@@ -285,11 +288,17 @@ class SemanticDistanceController extends FOSRestController{
 			$concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$data ['concept_1']));
 			$dist_array->concept_1=$concept_1;
-			$full_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			$retreive_ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
 			->find($data ['concept_2']);
+			$ontology_name=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+			->find($retreive_ontology->getOntologyId());
 			$nom=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$data ['concept_2']));
-			$term_concept=new TermConcept($nom, $full_id);
+			
+			$api_rest=new BioPortalApiRest();
+			$link=$api_rest->searchLinkBioPortal($ontology_name->getVirtualOntologyId(), $nom->getName());
+			
+			$term_concept=new TermConcept($nom, $link);
 			$dist_array->ajouterTermConcept($term_concept);
 		}
 		return $dist_array;

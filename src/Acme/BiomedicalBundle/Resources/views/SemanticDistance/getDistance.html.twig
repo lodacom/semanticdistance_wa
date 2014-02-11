@@ -8,7 +8,7 @@ pour la distance {{ distances.dist_id }} du concept z
 	<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
 pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getName() }}</h4>
 	{% for term_concepts in distances.semantic_distances %}
-			<p><a href="{{ term_concepts.getConcept().getFullId() }}">
+			<p><a href="{{ term_concepts.getLink() }}">
 			{{ term_concepts.getTerm().getName() }}
 			</a></p>
 	{% endfor %}

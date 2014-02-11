@@ -3,21 +3,21 @@
 namespace Acme\BiomedicalBundle\Model;
 
 use Acme\BiomedicalBundle\Entity\Term;
-use Acme\BiomedicalBundle\Entity\Concept;
 
 class TermConcept {
 	protected  $term;
-	protected  $concept;
+	protected  $link;
 	
-	public function __construct(Term $term,Concept $concept){
+	public function __construct(Term $term,$link){
 		$this->term=$term;
-		$this->concept=$concept;
+		$this->link=$link;
 	}
 	
 	public function getTerm() {
 		return $this->term;
 	}
-	public function getConcept() {
-		return $this->concept;
+	public function getLink() {
+		return $this->link;
 	}
+	
 }
