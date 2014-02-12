@@ -63,6 +63,7 @@ class SemanticDistanceController extends FOSRestController{
 		$dist_string=split(":", $dist_id)[1];//récupération par split du type de distance
 		$distance_max=($distance_max*$this->getMaxDistance($dist_string))/100;
 		//produit en croix en fonction du type de distance choisi par l'utilisateur
+
 		$results=$this->multiDistances($dist_id, $distance_max, $recup);
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
@@ -84,14 +85,14 @@ class SemanticDistanceController extends FOSRestController{
 	
 	private function getConceptIdByName($concept){
 		$em=$this->getDoctrine()->getEntityManager();
-		$query=$em->createQuery("SELECT t.id
+		$query=$em->createQuery("SELECT t.concept_id
 				FROM AcmeBiomedicalBundle:Term t
 				WHERE t.name= :name")
 						->setParameter("name", $concept);
 		$recup = $query->getArrayResult();
 		$id=array();
 		foreach ( $recup as $data ) {
-			array_push($id, $data['id']);
+			array_push($id, $data['concept_id']);
 		}
 		
 		return array_pop($id);
@@ -279,7 +280,7 @@ class SemanticDistanceController extends FOSRestController{
 			case 4:$dist_id="sim_schlicker";
 			break;
 		}
-			
+
 		$em=$this->getDoctrine()->getEntityManager();
 		$query=$em->createQuery("SELECT sd.".$dist_id.", sd.concept_1, sd.concept_2
 					FROM AcmeBiomedicalBundle:SemanticDistance sd

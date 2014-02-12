@@ -39,4 +39,14 @@ class SemanticDistanceCollection {
 	public function ajouterTermConcept($term_concept){
 		array_push($this->semantic_distances, $term_concept);
 	}
+	
+	public function __toString(){
+		$retour="";
+		for ($i=0;$i<count($this->semantic_distances);$i++){
+			$retour.="<p><a href=\"".$this->semantic_distances[$i]->getLink()."\">
+					".$this->semantic_distances[$i]->getTerm()->getName()."
+					</p>";
+		}
+		return $retour;
+	}
 }

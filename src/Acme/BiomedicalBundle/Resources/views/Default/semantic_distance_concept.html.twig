@@ -1,6 +1,6 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
 {% block javascripts %}
-{{ parent() }}
+	{{ parent() }}
 <script>
 $(function() {
     $( "#slider-range-max" ).slider({
@@ -57,10 +57,16 @@ $(function() {
 	</fieldset>
 </form>
 {% if distances is defined %}
-	{% for term_concepts in distances.semantic_distances %}
-				<p><a href="{{ term_concepts.getConcept().getFullId() }}">
+	{% if distances is not null %}
+			<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
+pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getName() }}</h4>
+		{% for term_concepts in distances.semantic_distances %}
+			<p><a href="{{ term_concepts.getLink() }}">
 				{{ term_concepts.getTerm().getName() }}
-				</a></p>
-	{% endfor %}
+			</a></p>
+		{% endfor %}
+	{% else %}
+		Il n'y a pas de concepts pour cette distance et pour ce type de distance.
+	{% endif %}
 {% endif %}
 {% endblock %}
