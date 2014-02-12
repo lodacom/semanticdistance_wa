@@ -57,24 +57,29 @@ class SemanticDistanceController extends FOSRestController{
 	public function searchConceptsInDistanceAction(){
 		$concept_1=$_POST['concept_1'];
 		$dist_id=$_POST['dist_id'];
-		$distance_max=$_POST['distance_max'];
+		$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur
 		$recup=$this->getConceptIdByName($concept_1);
-		//\Doctrine\Common\Util\Debug::dump($dist_id." ".$recup);
-		/*switch ($dist_id){
-			case 1: $distance_max;
-			break;
-			case 2:$distances->setSimWuPalmer($recup_id->getSimWuPalmer());
-			break;
-			case 3:$distances->setSimResnik($recup_id->getSimResnik());
-			break;
-			case 4:$distances->setSimSchlicker($recup_id->getSimSchlicker());
-			break;
-		}*/
 		
-		$results=$this->multiDistances($dist_id, 0.6, $recup);
+		$dist_string=split(":", $dist_id)[1];//récupération par split du type de distance
+		$distance_max=($distance_max*$this->getMaxDistance($dist_string))/100;
+		//produit en croix en fonction du type de distance choisi par l'utilisateur
+		$results=$this->multiDistances($dist_id, $distance_max, $recup);
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
 				'distances'=>$results));
+	}
+	
+	private function getMaxDistance($dist_id){
+		$quer = $this->getDoctrine()->getEntityManager();
+		$query=$quer->createQuery("SELECT MAX(sd.".$dist_id.") AS distance_max
+				FROM AcmeBiomedicalBundle:SemanticDistance sd");
+		$recup = $query->getArrayResult();
+		$max=array();
+		foreach ( $recup as $data ) {
+			array_push($max, $data['distance_max']);
+		}
+		
+		return array_pop($max);
 	}
 	
 	private function getConceptIdByName($concept){
@@ -263,7 +268,8 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	private function multiDistances($dist_id,$distance_max,$concept){
-		switch ($dist_id){
+		$tab=split(":", $dist_id);
+		switch ($tab[0]){
 			case 1:$dist_id="sim_lin";
 			break;
 			case 2:$dist_id="sim_wu_palmer";

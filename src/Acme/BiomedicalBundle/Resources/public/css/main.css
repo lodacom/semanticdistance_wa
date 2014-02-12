@@ -72,10 +72,17 @@ ul li{
 #head li:hover ul {
 	position: absolute;	
 	display: inherit;
-	background:url('../images/header_bg.png') repeat;	
 	width:250px;
 	height:45px;
 	margin-top:25px;
+}
+
+#head li:hover ul li{
+	border-style: inset;
+	background:#234979;
+	width:200px;
+	height:45px;
+	text-align: center;	
 }
 
 #footer{
