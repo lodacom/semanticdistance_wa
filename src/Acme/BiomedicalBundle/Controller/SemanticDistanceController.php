@@ -300,7 +300,7 @@ class SemanticDistanceController extends FOSRestController{
 					FROM AcmeBiomedicalBundle:SemanticDistance sd
 					WHERE sd.".$dist_id."<= :distance
 					AND sd.concept_1 = :id
-					ORDER BY sd.".$dist_id." ASC")
+					ORDER BY sd.".$dist_id." DESC")
 							->setMaxResults(10)
 							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
 		$recup = $query->getArrayResult();
@@ -308,7 +308,7 @@ class SemanticDistanceController extends FOSRestController{
 		/*for ($i=0;$i<count($dist_array);$i+10){
 			$length=$i+10;
 			$tab_to_thread=array_slice($dist_array, $i, $length);
-			$thread=new SearchLink($tab_to_thread);
+			$thread=new SearchLink($tab_to_thread,$this->getDoctrine());
 			$thread->start();
 		}*/
 		foreach ( $recup as $data ) {
