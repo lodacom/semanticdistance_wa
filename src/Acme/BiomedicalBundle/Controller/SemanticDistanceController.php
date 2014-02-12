@@ -21,6 +21,7 @@ use Acme\BiomedicalBundle\Model\TermConcept;
 use Acme\BiomedicalBundle\Model\BioPortalApiRest;
 use Acme\BiomedicalBundle\Entity\Ontology;
 use Acme\BiomedicalBundle\Model\SearchLink;
+use Acme\BiomedicalBundle\Model\ConstructGraph;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -47,12 +48,15 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_2=$this->getSemSimId($concept_2, $ontology);
 		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
+		$constructGraph=new ConstructGraph($this->getDoctrine());
+		
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',
 				array('title'=>'Distance sémantique',
 					'distances'=>$results,
 					'concept_1'=>$_POST['concept_1'],
 					'ontology'=>$ontology,
-					'concept_2'=>$_POST['concept_2']));
+					'concept_2'=>$_POST['concept_2']	
+					));
 	}
 	
 	public function searchConceptsInDistanceAction(){
