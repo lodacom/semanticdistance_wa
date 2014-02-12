@@ -20,6 +20,7 @@ use FOS\RestBundle\EventListener\ParamFetcherListener;
 use Acme\BiomedicalBundle\Model\TermConcept;
 use Acme\BiomedicalBundle\Model\BioPortalApiRest;
 use Acme\BiomedicalBundle\Entity\Ontology;
+use Acme\BiomedicalBundle\Model\SearchLink;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -164,7 +165,10 @@ class SemanticDistanceController extends FOSRestController{
 			}else{
 				$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
-				
+				if (!isset($distances_2)){
+					$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+					->findOneBy(array('concept_1'=>$concept_2,'concept_2'=>$concept_1));
+				}
 				return $distances_2;//OK fonctionne
 			}
 		}else{
@@ -173,11 +177,21 @@ class SemanticDistanceController extends FOSRestController{
 			if (isset($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
+				if (!isset($recup_id_2)){
+					$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
+				}
 				$distances=$this->singleDistance($recup_id_2,$dist_id);
+				
 				return $distances;//OK fonctionne
 			}else{
 				$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
+				if (!isset($distances_4)){
+					$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
+				}
+				
 				return $distances_4;//OK fonctionne
 			}
 		}
@@ -291,6 +305,12 @@ class SemanticDistanceController extends FOSRestController{
 							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
+		/*for ($i=0;$i<count($dist_array);$i+10){
+			$length=$i+10;
+			$tab_to_thread=array_slice($dist_array, $i, $length);
+			$thread=new SearchLink($tab_to_thread);
+			$thread->start();
+		}*/
 		foreach ( $recup as $data ) {
 			$concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$data ['concept_1']));
