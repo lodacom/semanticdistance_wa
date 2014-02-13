@@ -20,7 +20,6 @@ use FOS\RestBundle\EventListener\ParamFetcherListener;
 use Acme\BiomedicalBundle\Model\TermConcept;
 use Acme\BiomedicalBundle\Model\BioPortalApiRest;
 use Acme\BiomedicalBundle\Entity\Ontology;
-use Acme\BiomedicalBundle\Model\SearchLink;
 use Acme\BiomedicalBundle\Model\ConstructGraph;
 
 class SemanticDistanceController extends FOSRestController{
@@ -33,6 +32,15 @@ class SemanticDistanceController extends FOSRestController{
 	
 	public function indexConceptAction(){
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
+	}
+	
+	public function indexRedirectToBioPortalAction(){
+		$ontology=$_GET['ontology_acronym'];
+		$full_id=$_GET['full_id'];
+
+		$api_rest=new BioPortalApiRest();
+		$link=$api_rest->searchLinkBioPortal($ontology, $full_id);
+		return $this->redirect($link);
 	}
 	
 	/**
@@ -305,16 +313,9 @@ class SemanticDistanceController extends FOSRestController{
 					WHERE sd.".$dist_id."<= :distance
 					AND sd.concept_1 = :id
 					ORDER BY sd.".$dist_id." DESC")
-							->setMaxResults(10)
 							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
-		/*for ($i=0;$i<count($dist_array);$i+10){
-			$length=$i+10;
-			$tab_to_thread=array_slice($dist_array, $i, $length);
-			$thread=new SearchLink($tab_to_thread,$this->getDoctrine());
-			$thread->start();
-		}*/
 		foreach ( $recup as $data ) {
 			$concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$data ['concept_1']));
@@ -326,10 +327,7 @@ class SemanticDistanceController extends FOSRestController{
 			$nom=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$data ['concept_2']));
 			
-			$api_rest=new BioPortalApiRest();
-			$link=$api_rest->searchLinkBioPortal($ontology_name->getVirtualOntologyId(), $nom->getName());
-			
-			$term_concept=new TermConcept($nom, $link);
+			$term_concept=new TermConcept($nom, $ontology_name, $retreive_ontology);
 			$dist_array->ajouterTermConcept($term_concept);
 		}
 		return $dist_array;

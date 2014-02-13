@@ -61,4 +61,11 @@ acme_biomedical_all_concepts_in_distance:
     pattern:  /concepts_in_distance
     defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:searchConceptsInDistance }
     requirements: 
-      _method: POST      
+      _method: POST
+      
+acme_biomedical_link_to_bioportal:
+    pattern:  /link_to_bioportal
+    defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:indexRedirectToBioPortal }
+    requirements: 
+      _method: GET
+                
