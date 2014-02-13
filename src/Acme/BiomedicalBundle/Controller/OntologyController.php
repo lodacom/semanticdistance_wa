@@ -32,22 +32,15 @@ class OntologyController extends FOSRestController{
 	 * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing notes.")
 	 * @Annotations\QueryParam(name="limit", requirements="\d+", default="5", description="How many ontologies to return.")
 	 *
-	 * @Annotations\View()
+	 * @Annotations\View(templateVar="ontologies")
 	 *
 	 *
 	 * @return array
 	 */
-	public function allOntologyAction(Request $request, ParamFetcherInterface $paramFetcher){
-		$session = $request->getSession();
-		
-		$offset = $paramFetcher->get('offset');
-		$start = null == $offset ? 0 : $offset + 1;
-		$limit = $paramFetcher->get('limit');
-		
-		$ontologies = $session->get(self::SESSION_CONTEXT_ONTOLOGY, array());
-		$ontologies = array_slice($ontologies, $start, $limit, true);
-		
-		return new OntologyCollection($ontologies);
+	public function ontologiesAction(){
+		$ontologies=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+		->findAll();
+		return $ontologies;
 	}
 	
 	/**
@@ -63,17 +56,20 @@ class OntologyController extends FOSRestController{
 	 *
 	 * @Annotations\View(templateVar="ontology")
 	 *
-	 * @param integer     $id      the ontology id
+	 * @param integer     $id      the ontology id or the ontology acronym
 	 *
 	 * @return object
 	 *
 	 * @throws NotFoundHttpException when ontology not exist
 	 */
 	public function getOntologyAction($id){
-		$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")->find($id);
-		/*$view = new View($ontology);
-		$group = $this->container->get('security.context')->isGranted('ROLE_API') ? 'restapi' : 'standard';
-		$view->getSerializationContext()->setGroups(array('Default', $group));*/
+		$ontology=null;
+		if (preg_match("[\d+]", $id)||is_int($id)){
+			$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")->find($id);
+		}else{
+			$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+			->findOneBy(array('virtual_ontology_id'=>$id));
+		}
 		if ($ontology==null) {
 			throw $this->createNotFoundException("Ontology avec l'identifiant: ".$id." n'existe pas!");
 		}

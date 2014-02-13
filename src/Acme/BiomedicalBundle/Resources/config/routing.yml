@@ -67,5 +67,4 @@ acme_biomedical_link_to_bioportal:
     pattern:  /link_to_bioportal
     defaults: { _controller: AcmeBiomedicalBundle:SemanticDistance:indexRedirectToBioPortal }
     requirements: 
-      _method: GET
-                
+      _method: GET               
