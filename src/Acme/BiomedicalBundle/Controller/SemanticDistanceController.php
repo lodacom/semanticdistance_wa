@@ -34,6 +34,11 @@ class SemanticDistanceController extends FOSRestController{
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
 	}
 	
+	/**
+	 * Permet de rediriger l'utilisateur vers l'interface de BioPortal
+	 * après le clique sur le bouton de redirection pour un terme
+	 * @return \Symfony\Component\HttpFoundation\RedirectResponse
+	 */
 	public function indexRedirectToBioPortalAction(){
 		$ontology=$_GET['ontology_acronym'];
 		$full_id=$_GET['full_id'];
@@ -44,7 +49,7 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	/**
-	 * Permet de faire l'affichage pour l'interface web
+	 * Permet de faire l'affichage pour l'interface web pour le service 1
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function searchCalculateDistanceAction(){
@@ -67,6 +72,10 @@ class SemanticDistanceController extends FOSRestController{
 					));
 	}
 	
+	/**
+	 * Permet de faire l'affichage pour l'interface web pour le service 2
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
 	public function searchConceptsInDistanceAction(){
 		$concept_1=$_POST['concept_1'];
 		$dist_id=$_POST['dist_id'];
@@ -84,6 +93,12 @@ class SemanticDistanceController extends FOSRestController{
 				'distances'=>$results));
 	}
 	
+	/**
+	 * 
+	 * @param string $dist_id le nom du type de distance
+	 * @return mixed la valeur maximale pour le type de distance
+	 * donné en paramètre
+	 */
 	private function getMaxDistance($dist_id){
 		$quer = $this->getDoctrine()->getEntityManager();
 		$query=$quer->createQuery("SELECT MAX(sd.".$dist_id.") AS distance_max
@@ -97,6 +112,11 @@ class SemanticDistanceController extends FOSRestController{
 		return array_pop($max);
 	}
 	
+	/**
+	 * 
+	 * @param string $concept
+	 * @return mixed l'identifiant du concept
+	 */
 	private function getConceptIdByName($concept){
 		$em=$this->getDoctrine()->getEntityManager();
 		$query=$em->createQuery("SELECT t.concept_id
@@ -112,6 +132,13 @@ class SemanticDistanceController extends FOSRestController{
 		return array_pop($id);
 	}
 	
+	/**
+	 * 
+	 * @param string $concept
+	 * @param integer $ontology
+	 * @return mixed l'identifiant du concept en fonction de son nom et de l'ontologie
+	 * dans laquelle il se trouve
+	 */
 	private function getSemSimId($concept,$ontology){
 		$quer = $this->getDoctrine()->getEntityManager();
 		$query=$quer->createQuery("SELECT c.id
@@ -163,9 +190,9 @@ class SemanticDistanceController extends FOSRestController{
 	
 	/**
 	 * 
-	 * @param string $concept_1
-	 * @param string $concept_2
-	 * @param string $dist_id
+	 * @param string $concept_1 l'identifiant ou l'URI du concept
+	 * @param string $concept_2 l'identifiant ou l'URI du concept
+	 * @param string $dist_id l'identifiant du type de distance
 	 * @return object \Acme\BiomedicalBundle\Entity\SemanticDistance
 	 */
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
@@ -211,7 +238,7 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	/**
-	 * 
+	 * Permet de renvoyer l'identifiant du concept
 	 * @param string $concept l'URI du concept
 	 * @return mixed l'identifiant du concept
 	 */
