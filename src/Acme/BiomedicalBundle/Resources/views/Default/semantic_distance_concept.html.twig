@@ -61,9 +61,15 @@ $(function() {
 			<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
 pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getName() }}</h4>
 		{% for term_concepts in distances.semantic_distances %}
-			<p><a href="{{ term_concepts.getLink() }}">
-				{{ term_concepts.getTerm().getName() }}
-			</a></p>
+			<p>
+			<a href="{{  term_concepts.getConcept().getFullId() }}">
+			{{ term_concepts.getTerm().getName() }}
+			</a>
+			<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ term_concepts.getOntology().getVirtualOntologyId() }}
+			&full_id={{ term_concepts.getFullId() }}">
+			<button class="home_button">Lien vers BioPortal</button>
+			</a>
+			</p>
 		{% endfor %}
 	{% else %}
 		Il n'y a pas de concepts pour cette distance et pour ce type de distance.

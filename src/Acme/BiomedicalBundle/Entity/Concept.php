@@ -3,6 +3,7 @@
 namespace Acme\BiomedicalBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation;
 
 /**
  *
@@ -17,6 +18,7 @@ class Concept {
 	 */
 	protected $id;
 	/**
+	 * @Annotation\Exclude
 	 * @ORM\Column(type="string", length=355)
 	 */
 	protected $local_concept_id;

@@ -73,7 +73,8 @@ class SemanticDistanceController extends FOSRestController{
 		$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur
 		$recup=$this->getConceptIdByName($concept_1);
 		
-		$dist_string=split(":", $dist_id)[1];//récupération par split du type de distance
+		$dist_string=split(":", $dist_id);//récupération par split du type de distance
+		$dist_string=$dist_string[1];
 		$distance_max=($distance_max*$this->getMaxDistance($dist_string))/100;
 		//produit en croix en fonction du type de distance choisi par l'utilisateur
 

@@ -3,6 +3,7 @@
 namespace Acme\BiomedicalBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation;
 
 /**
  * 
@@ -17,6 +18,7 @@ class Ontology {
 	 */
 	protected $id;
 	/**
+	 * @Annotation\Exclude
 	 * @ORM\Column(type="string", length=246)
 	 */
 	protected $local_ontology_id;
@@ -29,6 +31,7 @@ class Ontology {
 	 */
 	protected $version;
 	/**
+	 * @Annotation\Exclude
 	 * @ORM\Column(type="string", length=246)
 	 */
 	protected $description;
