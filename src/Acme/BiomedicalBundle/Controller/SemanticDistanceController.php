@@ -60,6 +60,11 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_1=$this->getSemSimId($concept_1, $ontology);
 		$concept_2=$this->getSemSimId($concept_2, $ontology);
 		
+		if (is_null($concept_1)&&is_null($concept_2)){
+			$concept_1=$_POST['concept_1_full_id'];
+			$concept_2=$_POST['concept_2_full_id'];
+		}
+		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
 		$constructGraph=new ConstructGraph($this->getDoctrine());
 		

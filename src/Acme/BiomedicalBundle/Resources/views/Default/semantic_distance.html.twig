@@ -86,9 +86,15 @@
 			value="{{ concept_2 }}" 
 			{% else %}
 			value="Entrer un concept, ex Melanoma" 
-			{% endif %} />
-		<input class="home_button" type="submit" value="Calculer">	
+			{% endif %} />		
 	</fieldset>
+	OU
+	<fieldset>
+		<legend>Calculer la distance sémantique entre deux URIs</legend>
+		<input type="text" id="concept_1_full_id" name="concept_1_full_id" />
+		<input type="text" id="concept_2_full_id" name="concept_2_full_id" />
+	</fieldset>
+	<input class="home_button" type="submit" value="Calculer">
 </form>
 {% if distances is defined %}
 	{% if distances is not null %}
