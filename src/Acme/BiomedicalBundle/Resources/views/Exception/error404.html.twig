@@ -1,0 +1,6 @@
+{% extends 'TwigBundle::error.html.twig' %}
+{% block content %} 
+{{ parent() }}
+<h1>Oups! Une erreur est survenue</h1>
+<h2>Le serveur a retourné une erreur "{{ status_code }} {{ status_text }}".</h2>
+{% endblock %}

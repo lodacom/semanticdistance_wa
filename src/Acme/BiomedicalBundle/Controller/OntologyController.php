@@ -12,8 +12,9 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-use Acme\BiomedicalBundle\Model\OntologyCollection;
 use Acme\BiomedicalBundle\Entity\Ontology;
+use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OntologyController extends FOSRestController{
 	
@@ -66,12 +67,15 @@ class OntologyController extends FOSRestController{
 		$ontology=null;
 		if (preg_match("[\d+]", $id)||is_int($id)){
 			$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")->find($id);
+			if ($ontology==null) {
+				throw new HttpException(404,"L'ontologie avec l'identifiant: ".$id." n'existe pas!");
+			}
 		}else{
 			$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
 			->findOneBy(array('virtual_ontology_id'=>$id));
-		}
-		if ($ontology==null) {
-			throw $this->createNotFoundException("Ontology avec l'identifiant: ".$id." n'existe pas!");
+			if ($ontology==null) {
+				throw new HttpException(404,"L'ontologie avec l'acronyme: ".$id." n'existe pas!");
+			}
 		}
 		return $ontology;
 	}

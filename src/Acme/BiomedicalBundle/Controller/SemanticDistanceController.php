@@ -11,6 +11,8 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 use Acme\BiomedicalBundle\Entity\SemanticDistance;
 use Acme\BiomedicalBundle\Entity\Term;
 use Acme\BiomedicalBundle\Entity\Concept;
@@ -63,6 +65,10 @@ class SemanticDistanceController extends FOSRestController{
 		if (is_null($concept_1)&&is_null($concept_2)){
 			$concept_1=$_POST['concept_1_full_id'];
 			$concept_2=$_POST['concept_2_full_id'];
+			if (!preg_match("^[http].+", $concept_1)&&!preg_match("^[http].+", $concept_2)){
+				throw new HttpException(403,"Vous devez mettre un champ de type url!");
+				//go to the hell
+			}
 		}
 		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
@@ -173,9 +179,9 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|.+)", description="First id concept to compare.Or the URI of concept 1")
-	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|.+)", description="Second id concept to compare.Or the URI of concept 2")
-	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
+	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|(http.+))", description="First id concept to compare.Or the URI of concept 1")
+	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|(http.+))", description="Second id concept to compare.Or the URI of concept 2")
+	 * @Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *
 	 * @Annotations\View(templateVar="distances")
@@ -189,7 +195,12 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_1=$paramFetcher->get('concept_1');
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
+		
 		$distances=$this->singleDistanceParam($concept_1, $concept_2, $dist_id);
+		if ($distances==null){
+			throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec
+					le concept: ".$concept_1." et le concept: ".$concept_2);
+		}
 		return $distances;
 	}
 	
@@ -217,6 +228,11 @@ class SemanticDistanceController extends FOSRestController{
 				return $distances_2;//OK fonctionne
 			}
 		}else{
+			if (!preg_match("(http.+)", $concept_1)&&!preg_match("(http.+)", $concept_2)){
+				throw new HttpException(403,"Vous devez mettre un champ de type url pour le
+						concept_1 et le concept_2!");
+				//go to the hell
+			}
 			$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
 			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));
 			if (isset($dist_id)){
@@ -301,12 +317,12 @@ class SemanticDistanceController extends FOSRestController{
 	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
 	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+|\d+.\d+)", description="The maximum distance to search.")
-	 * @Annotations\QueryParam(name="concept_1", requirements=".+", nullable=true, description="URI of concept.Should be 
-	 * mandatory if you want to serach by URI ")
+	 * @Annotations\QueryParam(name="concept_1", requirements="(http.+)", nullable=true, description="URI of concept.Should be 
+	 * mandatory if you want to search by URI ")
 	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
-	 *	@param integer     $concept      the concept id or if you want the URI string if you want to pass an URI 
+	 *	@param integer     $concept      the concept id or the URI string if you want to pass an URI 
 	 *  
 	 * @return object
 	 */
@@ -314,15 +330,29 @@ class SemanticDistanceController extends FOSRestController{
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
-			
-			return $this->multiDistances($dist_id, $distance_max, $concept);
+			$results=$this->multiDistances($dist_id, $distance_max, $concept);
+			if ($results==null) {
+				throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
+						et l'identifiant de distance: ".$dist_id);
+			}
+			return $results;
 		}else{
 			if (preg_match("[URI]", $concept)){
 				$concept_recup=$paramFetcher->get('concept_1');
+				if (!preg_match("(http.+)", $concept_recup)){
+					throw new HttpException(403,"Vous devez mettre un champ de type url pour le
+						concept_1!");
+					//go to the hell
+				}
 				$concept_1=urldecode($concept_recup);
 				$concept_id=$this->retreiveConceptId($concept_1);
 			
-				return $this->multiDistances($dist_id, $distance_max, $concept_id);
+				$results=$this->multiDistances($dist_id, $distance_max, $concept);
+				if ($results==null) {
+					throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
+						et l'identifiant de distance: ".$dist_id);
+				}
+				return $results;
 			}
 		}
 	}
