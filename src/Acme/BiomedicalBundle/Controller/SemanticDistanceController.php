@@ -341,12 +341,16 @@ class SemanticDistanceController extends FOSRestController{
 		}
 
 		$em=$this->getDoctrine()->getEntityManager();
-		$query=$em->createQuery("SELECT sd.".$dist_id.", sd.concept_1, sd.concept_2
-					FROM AcmeBiomedicalBundle:SemanticDistance sd
-					WHERE sd.".$dist_id."<= :distance
-					AND sd.concept_1 = :id
-					ORDER BY sd.".$dist_id." DESC")
-							->setParameters(array("distance"=>$distance_max,"id"=>$concept));
+		$query=$em->createQueryBuilder()
+		->select("sd.".$dist_id.", sd.concept_1, sd.concept_2")
+		->from("AcmeBiomedicalBundle:SemanticDistance", "sd")
+		->where("sd.".$dist_id."<= :distance")
+		->andWhere("sd.concept_1 = :id")
+		->setParameters(array("distance"=>$distance_max,"id"=>$concept))
+		->orderBy("sd.".$dist_id,"DESC")
+		->distinct(true)
+		->getQuery();
+
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
 		foreach ( $recup as $data ) {
