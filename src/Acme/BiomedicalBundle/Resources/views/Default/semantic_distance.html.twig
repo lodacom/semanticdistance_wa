@@ -60,6 +60,9 @@
             	});
         		}
     		});
+  			$("input").focusin(function(){
+  				this.value = '';
+  			});
     	});
 </script>
 {% endblock %}
