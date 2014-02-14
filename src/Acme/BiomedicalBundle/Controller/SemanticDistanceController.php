@@ -23,6 +23,7 @@ use Acme\BiomedicalBundle\Model\TermConcept;
 use Acme\BiomedicalBundle\Model\BioPortalApiRest;
 use Acme\BiomedicalBundle\Entity\Ontology;
 use Acme\BiomedicalBundle\Model\ConstructGraph;
+use Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts;
 
 class SemanticDistanceController extends FOSRestController{
 	
@@ -217,6 +218,12 @@ class SemanticDistanceController extends FOSRestController{
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
 				$distances=$this->singleDistance($recup_id,$dist_id);
+				$name_concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+				->findOneBy(array('concept_id'=>$concept_1));
+				$name_concept_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+				->findOneBy(array('concept_id'=>$concept_2));
+				$retour=new SemanticDistanceTwoConcepts($recup_id, $name_concept_1, $name_concept_2);
+				
 				return $distances;//OK fonctionne
 			}else{
 				$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")

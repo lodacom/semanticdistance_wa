@@ -36,6 +36,7 @@ class Ontology {
 	 */
 	protected $description;
 	/**
+	 * @Annotation\Exclude
 	 * @ORM\Column(type="integer")
 	 */
 	protected $status;
