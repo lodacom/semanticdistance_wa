@@ -1,0 +1,7 @@
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
+{% block content %}
+{{ parent() }}
+<h3>{{ ontology.getName() }} {{ ontology.getVersion() }}</h3><br>
+
+<span id="format">Format: {{ ontology.getFormat() }}</span>
+{% endblock %}

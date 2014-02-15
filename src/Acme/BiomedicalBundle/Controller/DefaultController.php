@@ -12,16 +12,10 @@ class DefaultController extends Controller
     }
     
     public function goToOntologieAction(){
-    	$request = $this->get('request');
-    	//$recup=null;
-    	//if($request->isXmlHttpRequest()){
-    		$term = $request->request->get('searchOntology');
-    		$envoi=array();
-    		array_push($envoi, $term);
-    		$recup = $request->create('/api/ontologies','GET',$envoi);
-    		$truc=$recup->get('retour');
-    	//}
-    	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','results'=>$truc));
+    	$ontology=$_GET['searchOntology'];
+    	$result=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+    	->findOneBy(array('name'=>$ontology));
+    	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','ontology'=>$result));
     }
     
     /**

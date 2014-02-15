@@ -11,7 +11,7 @@ class TermConcept {
 	protected  $ontology; 
 	protected  $concept;
 	
-	public function __construct(Term $term,Ontology $ontology,Concept $concept){
+	public function __construct(Term $term,Ontology $ontology=null,Concept $concept=null){
 		$this->term=$term;
 		$this->ontology=$ontology;
 		$this->concept=$concept;

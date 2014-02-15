@@ -48,7 +48,7 @@
   				this.value = 'Entrer un concept, ex Melanoma';
   			});
   			$("#searchOntology").focusout(function(){
-  				this.value = 'Entrer un nom d\'ontology, ex NCI Thesaurus';
+  				this.value = $("#searchOntology").val();
   			});
   			$("#searchResources").focusout(function(){
   				this.value = 'Entrer un concept, ex Melanoma';

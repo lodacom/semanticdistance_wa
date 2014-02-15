@@ -26,10 +26,6 @@ et
 </a>
 </span>
 </p>
-Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
-Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
-Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
-Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
 {% elseif distances.getConcept1() is not null %}
 <!-- Cas où l'include=concept a été inséré par le requêteur -->
 <p>
@@ -44,10 +40,6 @@ et
 </a>
 </span>
 </p>
-Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
-Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
-Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
-Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
 {% else %}
 <!-- Cas par défaut l'include n'a pas été inséré par le requêteur -->
 <p>
@@ -55,9 +47,9 @@ Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<b
 Distances entre {{ distances.getTerm1().getName() }} et {{ distances.getTerm2().getName() }}
 </span>
 </p>
+{% endif %}
 Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
 Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
 Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
 Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
-{% endif %}
 {% endblock %}

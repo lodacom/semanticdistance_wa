@@ -66,7 +66,7 @@ class SemanticDistanceController extends FOSRestController{
 		if (is_null($concept_1)&&is_null($concept_2)){
 			$concept_1=$_POST['concept_1_full_id'];
 			$concept_2=$_POST['concept_2_full_id'];
-			if (!preg_match("^[http].+", $concept_1)&&!preg_match("^[http].+", $concept_2)){
+			if (!preg_match("(http.+)", $concept_1)&&!preg_match("(http.+)", $concept_2)){
 				throw new HttpException(403,"Vous devez mettre un champ de type url!");
 				//go to the hell
 			}

@@ -1,0 +1,29 @@
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %}
+{% block  title %}
+Term
+{% endblock %}
+{% block content %}
+{{ parent() }}
+{% if term.getOntology() is not null %}
+<!-- Cas où l'include=all a été inséré par le requêteur -->
+<h4>
+<a href="{{ term.getConcept().getFullId() }}">
+{{ term.getTerm().getName() }}
+</a>
+<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ term.getOntology().getVirtualOntologyId() }}
+			&full_id={{ term.getFullId() }}">
+<button class="home_button">Lien vers BioPortal</button>
+</a>
+</h4>
+{% elseif term.getConcept() is not null %}
+<!-- Cas où l'include=concept a été inséré par le requêteur -->
+<h4>
+<a href="{{ term.getConcept().getFullId() }}">
+{{ term.getTerm().getName() }}
+</a>
+</h4>
+{% else %}
+<!-- Cas par défaut l'include n'a pas été inséré par le requêteur -->
+<h4>{{ term.getTerm().getName() }}</h4>
+{% endif %}
+{% endblock %}

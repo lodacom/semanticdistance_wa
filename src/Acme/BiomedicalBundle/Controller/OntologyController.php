@@ -71,10 +71,15 @@ class OntologyController extends FOSRestController{
 				throw new HttpException(404,"L'ontologie avec l'identifiant: ".$id." n'existe pas!");
 			}
 		}else{
-			$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
-			->findOneBy(array('virtual_ontology_id'=>$id));
-			if ($ontology==null) {
-				throw new HttpException(404,"L'ontologie avec l'acronyme: ".$id." n'existe pas!");
+			$ontology=null;
+			if (preg_match("/[a-zA-Z]+/",$id)){
+				$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+				->findOneBy(array('virtual_ontology_id'=>$id));
+				if ($ontology==null) {
+					throw new HttpException(404,"L'ontologie avec l'acronyme: ".$id." n'existe pas!");
+				}
+			}else{
+				throw new HttpException(403,"Vous devez mettre un champ de type entier ou lettre!");
 			}
 		}
 		return $ontology;
