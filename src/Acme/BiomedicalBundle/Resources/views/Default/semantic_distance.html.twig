@@ -101,10 +101,11 @@
 </form>
 {% if distances is defined %}
 	{% if distances is not null %}
-	Distance de Lin: {{ distances.getSimLin() }}<br>
-	Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}<br>
-	Distance de Resnik: {{ distances.getSimResnik() }}<br>
-	Distance de Schlicker: {{ distances.getSimSchlicker() }}<br>
+	<h4>Distances entre {{ distances.getTerm1().getName() }} et {{ distances.getTerm2().getName() }}</h4>
+	Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
+	Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
+	Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
+	Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
 	{% else %}
 	Il n'y a pas de données pour ces deux concepts<br>
 	{% endif %}

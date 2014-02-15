@@ -4,11 +4,60 @@ Distance entre deux concepts
 {% endblock %}
 {% block content %}
 {{ parent() }}
+{% if distances.getOntology() is not null %}
+<!-- Cas où l'include=all a été inséré par le requêteur -->
 <p>
-<span id="concepts">Distances entre {{ distances.getConcept1() }} et {{ distances.getConcept2() }}</span>
+<span id="concepts">
+Distances entre 
+<a href="{{ distances.getConcept1().getFullId() }}">
+{{ distances.getTerm1().getName() }} 
+</a>
+<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ distances.getOntology().getVirtualOntologyId() }}
+			&full_id={{ distances.getEncodedFullIdConcept1() }}">
+<button class="home_button">Lien vers BioPortal</button>
+</a>
+et 
+<a href="{{ distances.getConcept2().getFullId() }}">
+{{ distances.getTerm2().getName() }}
+</a>
+<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ distances.getOntology().getVirtualOntologyId() }}
+			&full_id={{ distances.getEncodedFullIdConcept2() }}">
+<button class="home_button">Lien vers BioPortal</button>
+</a>
+</span>
 </p>
-Distance de Lin: {{ distances.getSimLin() }}<br>
-Distance de Wu Palmer: {{ distances.getSimWuPalmer() }}<br>
-Distance de Resnik: {{ distances.getSimResnik() }}<br>
-Distance de Schlicker: {{ distances.getSimSchlicker() }}<br>
+Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
+Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
+Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
+Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
+{% elseif distances.getConcept1() is not null %}
+<!-- Cas où l'include=concept a été inséré par le requêteur -->
+<p>
+<span id="concepts">
+Distances entre 
+<a href="{{ distances.getConcept1().getFullId() }}">
+{{ distances.getTerm1().getName() }} 
+</a>
+et 
+<a href="{{ distances.getConcept2().getFullId() }}">
+{{ distances.getTerm2().getName() }}
+</a>
+</span>
+</p>
+Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
+Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
+Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
+Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
+{% else %}
+<!-- Cas par défaut l'include n'a pas été inséré par le requêteur -->
+<p>
+<span id="concepts">
+Distances entre {{ distances.getTerm1().getName() }} et {{ distances.getTerm2().getName() }}
+</span>
+</p>
+Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
+Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
+Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
+Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
+{% endif %}
 {% endblock %}

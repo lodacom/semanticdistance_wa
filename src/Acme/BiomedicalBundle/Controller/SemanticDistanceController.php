@@ -173,7 +173,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 * @ApiDoc(
 	 *   resource = true,
-	 *   output = "Acme\BiomedicalBundle\Entity\SemanticDistance",
+	 *   output = "\Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts",
 	 *   statusCodes = {
 	 *     200 = "Returned when successful",
 	 *      404 = "Returned when concept_1 or concept_2 doesn't exist"
@@ -182,9 +182,10 @@ class SemanticDistanceController extends FOSRestController{
 	 *
 	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|(http.+))", description="First id concept to compare.Or the URI of concept 1")
 	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|(http.+))", description="Second id concept to compare.Or the URI of concept 2")
-	 * @Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="L'identifiant de la distance.
+	 * @Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="The distance id.
 	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
-	 *
+	 * @Annotations\QueryParam(name="include", requirements="(concept|all)", nullable=true, description="If you want to retreive the full_id of the concept
+	 * put concept. If you want the full_id and the ontology of concept put all")
 	 * @Annotations\View(templateVar="distances")
 	 *
 	 *
@@ -196,8 +197,9 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_1=$paramFetcher->get('concept_1');
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
+		$include=$paramFetcher->get('include');
 		
-		$distances=$this->singleDistanceParam($concept_1, $concept_2, $dist_id);
+		$distances=$this->singleDistanceParam($concept_1, $concept_2, $dist_id, $include);
 		if ($distances==null){
 			throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec
 					le concept: ".$concept_1." et le concept: ".$concept_2);
@@ -206,32 +208,68 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	/**
-	 * 
+	 * Fonction permettant de construir l'objet complexe SemanticDistanceTwoConcepts
+	 * en fonction des trois paramètres ci-dessous et de le renvoyer
+	 * @param integer $semantic_id
+	 * @param integer $concept_1
+	 * @param integer $concept_2
+	 * @param string  $include
+	 * @return \Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts
+	 */
+	private function returnSemanticDistanceTwoConcepts(SemanticDistance $semantic_object,$concept_1,$concept_2,$include=null){
+		$name_concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+		->findOneBy(array('concept_id'=>$concept_1));
+		$name_concept_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+		->findOneBy(array('concept_id'=>$concept_2));
+		$retour=new SemanticDistanceTwoConcepts($semantic_object, $name_concept_1, $name_concept_2);
+		
+		if (!is_null($include)){
+			$concept_object_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			->find($concept_1);
+			$concept_object_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Concept")
+			->find($concept_2);
+			if (strcmp($include, "concept")==0){
+				$retour=new SemanticDistanceTwoConcepts($semantic_object, $name_concept_1, $name_concept_2,$concept_object_1,$concept_object_2);
+			}else{
+				$ontology=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
+				->find($concept_object_1->getOntologyId());//on choisi le premier mais 
+				//on aurait pu prendre le deuxième concept (car provient de la même ontologie)
+				$retour=new SemanticDistanceTwoConcepts($semantic_object, $name_concept_1, $name_concept_2,$concept_object_1,$concept_object_2,$ontology);
+			}
+		}
+		return $retour;
+	}
+	
+	/**
+	 * Fonction permettant de récupérer les identifiants et objet pour pouvoir construir
+	 * l'objet complexe SemanticDistanceTwoConcepts
 	 * @param string $concept_1 l'identifiant ou l'URI du concept
 	 * @param string $concept_2 l'identifiant ou l'URI du concept
 	 * @param string $dist_id l'identifiant du type de distance
-	 * @return object \Acme\BiomedicalBundle\Entity\SemanticDistance
+	 * @return object \Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts
 	 */
-	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null){
+	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null,$include=null){
 		if ((preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2))||(is_int($concept_1)&&is_int($concept_2))){
-			if (isset($dist_id)){
+			if (!is_null($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
+				if (is_null($recup_id)){
+					$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
+					->findOneBy(array('concept_1'=>$concept_2,'concept_2'=>$concept_1));
+				}
 				$distances=$this->singleDistance($recup_id,$dist_id);
-				$name_concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
-				->findOneBy(array('concept_id'=>$concept_1));
-				$name_concept_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
-				->findOneBy(array('concept_id'=>$concept_2));
-				$retour=new SemanticDistanceTwoConcepts($recup_id, $name_concept_1, $name_concept_2);
+				
+				$distances=$this->returnSemanticDistanceTwoConcepts($distances, $concept_1, $concept_2,$include);
 				
 				return $distances;//OK fonctionne
 			}else{
 				$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1,'concept_2'=>$concept_2));
-				if (!isset($distances_2)){
+				if (is_null($distances_2)){
 					$distances_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2,'concept_2'=>$concept_1));
 				}
+				$distances_2=$this->returnSemanticDistanceTwoConcepts($distances_2, $concept_1, $concept_2,$include);
 				return $distances_2;//OK fonctionne
 			}
 		}else{
@@ -242,24 +280,25 @@ class SemanticDistanceController extends FOSRestController{
 			}
 			$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
 			$concept_2_id=$this->retreiveConceptId(urldecode($concept_2));
-			if (isset($dist_id)){
+			if (!is_null($dist_id)){
 				$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
-				if (!isset($recup_id_2)){
+				if (is_null($recup_id_2)){
 					$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
 				}
 				$distances=$this->singleDistance($recup_id_2,$dist_id);
+				$distances=$this->returnSemanticDistanceTwoConcepts($distances, $concept_1_id, $concept_2_id,$include);
 				
 				return $distances;//OK fonctionne
 			}else{
 				$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 				->findOneBy(array('concept_1'=>$concept_1_id,'concept_2'=>$concept_2_id));
-				if (!isset($distances_4)){
+				if (is_null($distances_4)){
 					$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
 				}
-				
+				$distances_4=$this->returnSemanticDistanceTwoConcepts($distances_4, $concept_1_id, $concept_2_id,$include);
 				return $distances_4;//OK fonctionne
 			}
 		}
