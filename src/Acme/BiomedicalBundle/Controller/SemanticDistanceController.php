@@ -102,9 +102,14 @@ class SemanticDistanceController extends FOSRestController{
 		//produit en croix en fonction du type de distance choisi par l'utilisateur
 
 		$results=$this->multiDistances($dist_id, $distance_max, $recup);
+		//TODO: construct a graph
+		$constructGraph=new ConstructGraph($this->getDoctrine());
+		$constructGraph->getAllNodesAroundConcept($results->semantic_distances);
+		
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
-				'distances'=>$results));
+				'distances'=>$results,
+				'graph'=>$constructGraph));
 	}
 	
 	/**
@@ -405,6 +410,12 @@ class SemanticDistanceController extends FOSRestController{
 		}
 	}
 	
+	/**
+	 * @param string $dist_id le type de la distance
+	 * @param integer $distance_max la distance maximale choisie par l'utilisateur
+	 * @param integer $concept l'identifiant du concept
+	 * @return array of TermConcept
+	 */
 	private function multiDistances($dist_id,$distance_max,$concept){
 		$tab=split(":", $dist_id);
 		switch ($tab[0]){

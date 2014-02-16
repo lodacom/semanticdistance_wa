@@ -4,16 +4,29 @@ namespace Acme\BiomedicalBundle\Model;
 
 use Acme\BiomedicalBundle\Entity\Term;
 use Acme\BiomedicalBundle\Entity\Ontology;
+use Acme\BiomedicalBundle\Entity\Relation;
 
 class ConstructGraph {
 	
 	public $doctrine;
+	//....................................
+	//varibales pour le service 1
 	protected $tab_of_Node_1;
 	protected $tab_of_Node_2;
+	//....................................
+	//variable pour le service 2
+	protected $tab_of_Node;
 	
 	public function __construct($doctrine){
 		$this->doctrine=$doctrine;
 	}
+	
+	/*
+	 * Partie correspondant au service 1 pour la récupération
+	* de tous les noeuds pour le List Common Ancestor.
+	* Par la suite dans le template twig génération
+	* du graphe à partir des données récupérées.
+	*/
 	
 	public function getSizeOfTab1(){
 		return count($this->tab_of_Node_1)-1;	
@@ -32,9 +45,10 @@ class ConstructGraph {
 	}
 	
 	/**
-	 * 
-	 * @param integer $concept1
-	 * @param integer $concept2
+	 * Rempli les deux tableaux de noeuds dans l'ordre suivant:
+	 * racine vers feuille
+	 * @param integer $concept1 l'identifiant du concept
+	 * @param integer $concept2 l'identifiant du concept
 	 */
 	public function getListAncestorsConcepts($concept1,$concept2){
 		$concept1_path=$this->doctrine->getRepository("AcmeBiomedicalBundle:PathToRoot")
@@ -127,5 +141,55 @@ class ConstructGraph {
 			$i++;//on s'arrête quand on a trouvé un identifiant égal (donc l'ancêtre commun)
 		}
 		return $tab_1[$i];
+	}
+	
+	/*
+	 * Partie correspondant au service 2 pour la récupération
+	 * de tous les noeuds 
+	 */
+	
+	/**
+	 * 
+	 * @param array of TermConcept $term_concept
+	 */
+	public function getAllNodesAroundConcept($term_concept){
+		$node_array=array();
+		for ($i=0;$i<count($term_concept);$i++){
+			$node=new Node($term_concept[$i]->getTerm()->getName(), $term_concept[$i]->getConcept(),$term_concept[$i]->getOntology());
+			array_push($node_array, $node);
+		}
+		$this->tab_of_Node=$node_array;
+	}
+	
+	public function getSizeOfTab(){
+		return (count($this->tab_of_Node)-1);
+	}
+	
+	public function getNodeForService2($index){
+		return $this->tab_of_Node[$index];
+	}
+	
+	/**
+	 * Permet de renvoyer le noeud père 
+	 * @param Node $node
+	 * @return  \Acme\BiomedicalBundle\Model\Node
+	 */
+	public function getParentOfNode(Node $node){
+		$concept_id=$node->getConcept()->getId();
+		$relation=$this->doctrine->getRepository("AcmeBiomedicalBundle:Relation")
+		->findOneBy(array('concept_id'=>$concept_id));
+		$node=null;
+		if (!is_null($relation)){
+			$parent_concept_id=$relation->getParentConceptId();//on récupère l'identifiant du père
+			
+			$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
+			->findOneBy(array('concept_id'=>$parent_concept_id));
+			$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
+			->find($parent_concept_id);
+			$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
+			->find($concept->getOntologyId());
+			$node=new Node($term->getName(), $concept,$ontology);
+		}
+		return $node;
 	}
 }
