@@ -20,7 +20,7 @@ nodes:{
  		demos:{length:.8},
  		docs:{length:.8},
  		code:{length:.8}
- 	},
+ 		},
  	demos:{halfviz:{},
  		atlas:{},
  		echolalia:{}
@@ -33,3 +33,4 @@ nodes:{
  		"github":{}
  	}
  	}
+//................................................................................ 	

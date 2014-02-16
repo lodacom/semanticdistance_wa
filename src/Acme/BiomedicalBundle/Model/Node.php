@@ -7,18 +7,23 @@ use Acme\BiomedicalBundle\Entity\Ontology;
 
 class Node {
 	protected $name;
-	protected $link;
+	protected $acronym;
+	protected $full_id;
 	
 	public function __construct($name,Concept $concept,Ontology $ontology){
 		$this->name=$name;
-		$this->link="?ontology_acronym=".$ontology->getVirtualOntologyId().
-		"&full_id=".urlencode($concept->getFullId());
+		$this->acronym=$ontology->getVirtualOntologyId();
+		$this->full_id=urlencode($concept->getFullId());
 	}
 	public function getName() {
 		return $this->name;
 	}
-	public function getLink() {
-		return $this->link;
+	public function getAcronym() {
+		return $this->acronym;
 	}
+	public function getFullId() {
+		return $this->full_id;
+	}
+	
 	
 }

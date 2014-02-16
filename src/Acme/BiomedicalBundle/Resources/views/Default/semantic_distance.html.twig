@@ -97,23 +97,27 @@ javascripts %} {{ parent() }}
 	</fieldset>
 	<input class="home_button" type="submit" value="Calculer">
 </form>
-{% if distances is defined %} {% if distances is not null %}
-<h4>Distances entre {{ distances.getTerm1().getName() }} et {{
-	distances.getTerm2().getName() }}</h4>
-Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}
-<br>
-Distance de Wu Palmer: {{
-distances.getSemanticDistance().getSimWuPalmer() }}
-<br>
-Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}
-<br>
-Distance de Schlicker: {{
-distances.getSemanticDistance().getSimSchlicker() }}
-<br>
-
-{% else %} Il n'y a pas de données pour ces deux concepts
-<br>
-{% endif %} {% endif %}
+{% if distances is defined %} 
+	{% if distances is not null %}
+	<h4>Distances entre {{ distances.getTerm1().getName() }} et {{
+		distances.getTerm2().getName() }}</h4>
+	Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}
+	<br>
+	Distance de Wu Palmer: {{
+	distances.getSemanticDistance().getSimWuPalmer() }}
+	<br>
+	Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}
+	<br>
+	Distance de Schlicker: {{
+	distances.getSemanticDistance().getSimSchlicker() }}
+	<br>
+	
+	{% else %} 
+	Il n'y a pas de données pour ces deux concepts
+	<br>
+	{% endif %} 
+{% endif %}
+{% if graph is defined and graph is not null %}
 <script>
 /**
  * 
@@ -141,8 +145,8 @@ distances.getSemanticDistance().getSimSchlicker() }}
  			sys = pSystem
  			sys.screen({size:{width:dom.width(), height:dom.height()},
  			padding:[36,60,36,60]})
- 			$(window).resize(that.resize)
- 			that.resize()
+ 			//$(window).resize(that.resize)
+ 			//that.resize()
  			that._initMouseHandling()
  			if (document.referrer.match(/echolalia|atlas|halfviz/)){
  			// if we got here by hitting the back button in one of the demos,
@@ -408,40 +412,65 @@ distances.getSemanticDistance().getSimSchlicker() }}
  	}
  var theUI = {
  			nodes:{
- 		 	 	"arbor.js":{color:"red", shape:"dot", alpha:1},
- 		 		demos:{color:CLR.branch, shape:"dot", alpha:1},
- 		 		halfviz:{color:CLR.demo, alpha:0, link:'/halfviz'},
- 		 		atlas:{color:CLR.demo, alpha:0, link:'/atlas'},
- 		 		echolalia:{color:CLR.demo, alpha:0, link:'/echolalia'},
- 		 		docs:{color:CLR.branch, shape:"dot", alpha:1},
- 		 		reference:{color:CLR.doc, alpha:0, link:'#reference'},
- 		 		introduction:{color:CLR.doc, alpha:0, link:'#introduction'},
- 		 		code:{color:CLR.branch, shape:"dot", alpha:1},
- 		 		github:{color:CLR.code, alpha:0, link:'https://github.com/samizdatco/arbor'},
- 		 		".zip":{color:CLR.code, alpha:0, link:'/js/dist/arbor-v0.92.zip'},
- 		 		".tar.gz":{color:CLR.code, alpha:0, link:'/js/dist/arbor-v0.92.tar.gz'}
+ 		 		"{{  graph.getNode(1,0).getName()}}":{color:"red", alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,0).getAcronym()}}&full_id={{  graph.getNode(1,0).getFullId()}}' },
+ 		 		{% for i in 1..graph.getSizeOfTab1() %}
+ 				{% if i==graph.getSizeOfTab1() %}
+ 				"{{ graph.getNode(1,i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,i).getAcronym()}}&full_id={{  graph.getNode(1,i).getFullId()}}' },
+ 				{% else %}
+ 				"{{ graph.getNode(1,i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,i).getAcronym()}}&full_id={{  graph.getNode(1,i).getFullId()}}' },
+ 				{% endif %}
+ 				{% endfor %}
+ 				{% for i in 1..graph.getSizeOfTab2() %}
+ 				{% if i==graph.getSizeOfTab2() %}
+ 				"{{ graph.getNode(2,i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(2,i).getAcronym()}}&full_id={{  graph.getNode(2,i).getFullId()}}' }
+ 				{% else %}
+ 				"{{ graph.getNode(2,i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(2,i).getAcronym()}}&full_id={{  graph.getNode(2,i).getFullId()}}' },
+ 				{% endif %}
+ 				{% endfor %}
  		 	},
  		 	edges:{
- 		 		"arbor.js":{
- 		 		demos:{length:.8},
- 		 		docs:{length:.8},
- 		 		code:{length:.8}
- 		 	},
- 		 	demos:{halfviz:{},
- 		 		atlas:{},
- 		 		echolalia:{}
- 		 	},
- 		 	docs:{reference:{},
- 		 		introduction:{}
- 		 	},
- 		 	code:{".zip":{},
- 		 		".tar.gz":{},
- 		 		"github":{}
+ 		 		"{{  graph.getNode(1,0).getName()}}":{
+ 		 			{%  if graph.getNode(1,1) is not null %}
+ 		 				{%  if graph.getNode(2,1) is not null%}
+ 		 					"{{  graph.getNode(1,1).getName()}}":{},
+ 		 					"{{  graph.getNode(2,1).getName()}}":{}
+ 		 				{% else %}
+ 		 					"{{  graph.getNode(1,1).getName()}}":{}
+ 		 				{% endif %}
+ 		 			{% else %}
+ 		 				{% if graph.getNode(2,1) is not null %}	
+ 		 					"{{  graph.getNode(2,1).getName()}}":{}
+ 		 				{% endif %}
+ 		 			{% endif %}	
+ 	 		 	},
+ 	 		 	{% for i in 1..graph.getSizeOfTab1() %}
+ 	 		 	{% if i!=graph.getSizeOfTab1() %}
+ 	 		 		{%  if graph.getNode(1,i) is not null %}
+ 	 		 		"{{  graph.getNode(1,i).getName()}}":{
+ 	 		 			{% set index=i+1 %}
+ 	 		 			{%  if graph.getNode(1,index) is not null %}
+ 	 		 				"{{  graph.getNode(1,index).getName()}}":{}
+ 	 		 			{% endif %}
+ 	 	 		 		},
+ 	 		 		{% endif %}
+ 	 	 		 {% endif %}
+ 	 		 	{% endfor %}
+ 	 		 	{% for i in 1..graph.getSizeOfTab2() %}
+ 	 		 	{% if i!=graph.getSizeOfTab2() %}
+ 	 		 		{%  if graph.getNode(2,i) is not null %}
+ 	 		 		"{{  graph.getNode(2,i).getName()}}":{
+ 	 		 			{% set index=i+1 %}
+ 	 		 			{%  if graph.getNode(2,index) is not null %}
+ 	 		 				"{{  graph.getNode(2,index).getName()}}":{}
+ 	 		 			{% endif %}
+ 	 	 		 		},
+ 	 		 		{% endif %}
+ 	 	 		 {% endif %}
+ 	 		 	{% endfor %}
  		 	}
- 		 	}
- }
+ 		}
  var sys = arbor.ParticleSystem()
- sys.parameters({stiffness:900, repulsion:2000, gravity:true, dt:0.015})
+ sys.parameters({stiffness:900, repulsion:43, gravity:true, dt:0.015})
  sys.renderer = Renderer("#viewport")
  sys.graft(theUI)
  var nav = Nav("#nav")
@@ -451,7 +480,15 @@ distances.getSemanticDistance().getSimSchlicker() }}
  })
  })(this.jQuery)
 </script>
-<div id="nav">
-	<canvas id="viewport" width="400" height="300"></canvas>
+<div id="color_code">
+<span id="color_legend">Légendes:</span><br>
+<span id="root_color">Couleur de la racine</span><br>
+<span id="children_color">Couleur des fils</span><br>
+<span id="leaf_color">Couleur des feuilles</span><br>
 </div>
+<span id="canvas_title">List Common Ancestor</span> 	 		 	
+<div id="nav">
+	<canvas id="viewport" title="List Common Ancestor" width="400" height="800" style="margin-left: 5%;position: relative;"></canvas>
+</div>
+{% endif %}
 {% endblock %}

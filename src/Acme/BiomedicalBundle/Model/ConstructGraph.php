@@ -15,12 +15,12 @@ class ConstructGraph {
 		$this->doctrine=$doctrine;
 	}
 	
-	public function getSizeOfTabNode1(){
-		return count($this->tab_of_Node_1);
+	public function getSizeOfTab1(){
+		return count($this->tab_of_Node_1)-1;	
 	}
 	
-	public function getSizeOfTabNode2(){
-		return count($this->tab_of_Node_2);
+	public function getSizeOfTab2(){
+		return count($this->tab_of_Node_2)-1;
 	}
 	
 	public function getNode($id_tab,$index){
@@ -43,13 +43,15 @@ class ConstructGraph {
 		->findOneBy(array('concept_id'=>$concept2));
 		
 		$path_to_root_1=$concept1_path->getPathToRoot();//de la racine jusqu'à son parent
-		$path_to_root_2=$concept2_path->getPathToRoot();
+		$path_to_root_2=$concept2_path->getPathToRoot();//OK
+		
 		$common_ancestor=null;
-		if (strlen($path_to_root_1)>strlen($path_to_root_2)){
+		if (strlen($path_to_root_1)>=strlen($path_to_root_2)){
 			$common_ancestor=$this->getCommonAncestor($path_to_root_2, $path_to_root_1);
 		}else{
 			$common_ancestor=$this->getCommonAncestor($path_to_root_1, $path_to_root_2);
-		}
+		}//OK
+		//\Doctrine\Common\Util\Debug::dump($common_ancestor);
 		$tab_1=split("\.", $path_to_root_1);
 		$tab_2=split("\.", $path_to_root_2);
 		$this->tab_of_Node_1=$this->getTermLinkToBioPortal($tab_1, $common_ancestor,$concept1);
@@ -63,12 +65,28 @@ class ConstructGraph {
 	 * @return array of Node
 	 */
 	private function getTermLinkToBioPortal($tab,$common_ancestor,$concept_leaf){
-		$i=0;
+		$i=count($tab)-1;//on commence par la fin sinon on s'arrête tout de suite
 		$node_array=array();
-		while ($i<count($tab)&&strcmp($tab[i], $common_ancestor)!=0){
+		
+		$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
+		->findOneBy(array('concept_id'=>$common_ancestor));
+		$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
+		->find($common_ancestor);
+		$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
+		->find($concept->getOntologyId());
+		//on met l'ancêtre commun en début de pile
+		//\Doctrine\Common\Util\Debug::dump($term->getName());
+		
+		$node=new Node($term->getName(), $concept,$ontology);
+		array_push($node_array, $node);
+		
+		while ($i>0&&strcmp($tab[$i], $common_ancestor)!=0){
 			$concept=$tab[$i];
 			$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$concept));
+			
+			//\Doctrine\Common\Util\Debug::dump($term->getName());
+			
 			$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
 			->find($concept);
 			$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
@@ -76,7 +94,7 @@ class ConstructGraph {
 			
 			$node=new Node($term->getName(), $concept,$ontology);
 			array_push($node_array, $node);
-			$i++;
+			$i--;
 		}
 		
 		$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
@@ -85,12 +103,12 @@ class ConstructGraph {
 		->find($concept_leaf);
 		$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
 		->find($concept->getOntologyId());
-			
+		//on met la feuille en fin de pile
+		//\Doctrine\Common\Util\Debug::dump($term->getName());
+		
 		$node=new Node($term->getName(), $concept,$ontology);
 		array_push($node_array, $node);
 		
-		$node_array=array_reverse($node_array);//on inverse car les feuilles sont maintenant en début de pile
-		//à cause du push
 		return $node_array;
 	}
 	

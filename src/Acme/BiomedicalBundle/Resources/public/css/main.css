@@ -92,3 +92,36 @@ ul li{
 	color: white;
 	clear: both;
 }
+
+#canvas_title{
+	text-align: center;
+	font-weight: bold;
+	margin-left: 16%;
+}
+
+#color_code{
+	position: relative;
+	float: left;
+	margin-left: 14%;
+	margin-top:5%;	
+}
+
+#root_color{
+	color: red;
+	font-weight: bold;
+}
+
+#children_color{
+	color:#b2b19d;
+	font-weight: bold;
+}
+
+#leaf_color{
+	color:#a7af00;
+	font-weight: bold;
+}
+
+#color_legend{
+	font-weight: bold;
+	text-decoration: underline;
+}
