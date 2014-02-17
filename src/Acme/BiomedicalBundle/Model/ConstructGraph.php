@@ -16,6 +16,8 @@ class ConstructGraph {
 	//....................................
 	//variable pour le service 2
 	protected $tab_of_Node;
+	protected $save_results;
+	protected $parent_viewed=array();
 	
 	public function __construct($doctrine){
 		$this->doctrine=$doctrine;
@@ -145,7 +147,7 @@ class ConstructGraph {
 	
 	/*
 	 * Partie correspondant au service 2 pour la récupération
-	 * de tous les noeuds 
+	 * de tous les noeuds autour d'un noeud choisi par l'utilisateur. 
 	 */
 	
 	/**
@@ -153,6 +155,7 @@ class ConstructGraph {
 	 * @param array of TermConcept $term_concept
 	 */
 	public function getAllNodesAroundConcept($term_concept){
+		$this->save_results=$term_concept;
 		$node_array=array();
 		for ($i=0;$i<count($term_concept);$i++){
 			$node=new Node($term_concept[$i]->getTerm()->getName(), $term_concept[$i]->getConcept(),$term_concept[$i]->getOntology());
@@ -181,6 +184,9 @@ class ConstructGraph {
 		$node=null;
 		if (!is_null($relation)){
 			$parent_concept_id=$relation->getParentConceptId();//on récupère l'identifiant du père
+			if (!$this->isInResults($concept_id)){
+				return null;
+			}
 			
 			$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$parent_concept_id));
@@ -191,5 +197,112 @@ class ConstructGraph {
 			$node=new Node($term->getName(), $concept,$ontology);
 		}
 		return $node;
+	}
+	
+	/**
+	 * 
+	 * @param Node $node le fils potentiel
+	 * @return boolean Vrai si le noeud a un parent dans les résultats.
+	 * Faux sinon (ce qui veut dire qu'il est en position d'ancêtre commun)
+	 */
+	public function hasParentInResults(Node $node){
+		if ($this->getParentOfNode($node)==null){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param Node $node le père potentiel
+	 * @return boolean Vrai si le père a au moins un noeud fils 
+	 * dans les résultats trouvés.Sinon Faux.
+	 */
+	public function hasChildInResults(Node $node){
+		$concept_id=$node->getConcept()->getId();
+		$relation=$this->doctrine->getRepository("AcmeBiomedicalBundle:Relation")
+		->findOneBy(array('parent_concept_id'=>$concept_id));
+		if (!is_null($relation)){
+			$concept_id=$relation->getConceptId();//le noeud fils
+			if (!$this->isInResults($concept_id)){
+				return false;
+			}else{
+				return true;
+			}
+		}else{
+			return false;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param Node $parent_node le noeud parent du noeud inspecté
+	 * @param Node $child_node_inspected le noeud fils inscpecté
+	 * @return array of Node un tableau de noeuds (fils)
+	 */
+	public function getAllChildren(Node $parent_node,Node $child_node_inspected){
+		$relation=$this->doctrine->getRepository("AcmeBiomedicalBundle:Relation")
+		->findBy(array('parent_concept_id'=>$parent_node));
+		$retour=array();
+		for ($i=0;$i<count($relation);$i++){
+			$child=$relation[$i]->getConceptId();
+			if (strcmp($child, $child_node_inspected->getConcept()->getId())!=0){
+				if ($this->isInResults($child)){
+					
+					$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
+					->findOneBy(array('concept_id'=>$child));
+					$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
+					->find($child);
+					$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
+					->find($concept->getOntologyId());
+					$node=new Node($term->getName(), $concept,$ontology);
+					
+					array_push($retour, $node);
+				}
+			}
+		}
+		return $retour;
+	}
+	
+	/**
+	 * 
+	 * @param Node $node
+	 * @return boolean Vrai si le noeud a été vu en tant que parent.
+	 * Faux sinon.
+	 */
+	public function parentAlreadyViewed(Node $node){
+		$i=0;
+		if (empty($this->parent_viewed)){
+			array_push($this->parent_viewed, $node);
+			return false;
+		}
+		while ($i<count($this->parent_viewed)&&strcmp($this->parent_viewed[$i]->getName(), $node->getName())!=0){
+			$i++;
+		}
+		if ($i==count($this->save_results)){
+			array_push($this->parent_viewed, $node);
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param integer $concept_id l'identifiant du concept.
+	 * @return boolean Vrai si l'identifiant du concept est dans les résultats.
+	 * Faux sinon.
+	 */
+	private function isInResults($concept_id){
+		$i=0;
+		while ($i<count($this->save_results)&&strcmp($this->save_results[$i]->getConcept()->getId(),$concept_id)!=0){
+			$i++;
+		}
+		if ($i==count($this->save_results)){
+			return false;
+		}else{
+			return true;
+		}
 	}
 }

@@ -94,13 +94,9 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_1=$_POST['concept_1'];
 		$dist_id=$_POST['dist_id'];
 		$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur
-		$recup=$this->getConceptIdByName($concept_1);
-		
-		$dist_string=split(":", $dist_id);//récupération par split du type de distance
-		$dist_string=$dist_string[1];
-		$distance_max=($distance_max*$this->getMaxDistance($dist_string))/100;
-		//produit en croix en fonction du type de distance choisi par l'utilisateur
-
+		$ontology=$_POST['ontology'];
+		$recup=$this->getSemSimId($concept_1, $ontology);
+		//produit en croix effectué dans la méthode multiDistances
 		$results=$this->multiDistances($dist_id, $distance_max, $recup);
 		//TODO: construct a graph
 		$constructGraph=new ConstructGraph($this->getDoctrine());
@@ -109,6 +105,7 @@ class SemanticDistanceController extends FOSRestController{
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
 				'distances'=>$results,
+				'ontology'=>$ontology,		
 				'graph'=>$constructGraph));
 	}
 	
@@ -154,7 +151,7 @@ class SemanticDistanceController extends FOSRestController{
 	/**
 	 * 
 	 * @param string $concept
-	 * @param integer $ontology
+	 * @param string $ontology
 	 * @return mixed l'identifiant du concept en fonction de son nom et de l'ontologie
 	 * dans laquelle il se trouve
 	 */
@@ -187,12 +184,13 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|(http.+))", description="First id concept to compare.Or the URI of concept 1")
-	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|(http.+))", description="Second id concept to compare.Or the URI of concept 2")
+	 * @Annotations\QueryParam(name="concept_1", requirements="(\d+|(http.+))", description="First id concept to compare.Or the URI of concept 1.Mandatory")
+	 * @Annotations\QueryParam(name="concept_2", requirements="(\d+|(http.+))", description="Second id concept to compare.Or the URI of concept 2.Mandatory")
 	 * @Annotations\QueryParam(name="dist_id", requirements="\d+", nullable=true, description="The distance id.
-	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
+	 * If dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker.Optional")
 	 * @Annotations\QueryParam(name="include", requirements="(concept|all)", nullable=true, description="If you want to retreive the full_id of the concept
-	 * put concept. If you want the full_id and the ontology of concept put all")
+	 * put concept. If you want the full_id and the ontology of concept put all.Optional")
+	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
 	 *
@@ -367,15 +365,15 @@ class SemanticDistanceController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="L'identifiant de la distance.
-	 * Si dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker")
-	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+|\d+.\d+)", description="The maximum distance to search.")
+	 *	@Annotations\QueryParam(name="dist_id", requirements="\d+", description="The distance id.
+	 * If dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker.Mandatory")
+	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+)", description="The maximum distance to search between 0 to 100.Mandatory")
 	 * @Annotations\QueryParam(name="concept_1", requirements="(http.+)", nullable=true, description="URI of concept.Should be 
-	 * mandatory if you want to search by URI ")
+	 * mandatory if you want to search by URI.Optional")
 	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
-	 *	@param integer     $concept      the concept id or the URI string if you want to pass an URI 
+	 *	@param integer     $concept      the concept id or the string URI if you want to pass an URI.Mandatory. 
 	 *  
 	 * @return object
 	 */
@@ -411,13 +409,18 @@ class SemanticDistanceController extends FOSRestController{
 	}
 	
 	/**
-	 * @param string $dist_id le type de la distance
+	 * @param integer $dist_id le type de la distance
 	 * @param integer $distance_max la distance maximale choisie par l'utilisateur
 	 * @param integer $concept l'identifiant du concept
 	 * @return array of TermConcept
 	 */
 	private function multiDistances($dist_id,$distance_max,$concept){
 		$tab=split(":", $dist_id);
+		if (!preg_match("(\d+)", $dist_id)&&!preg_match("(\d+)", $distance_max)&&!preg_match("(\d+)", $concept)){
+			throw new HttpException(403,"Vous devez mettre un champ de type entier pour le champ
+						dist_id et distance_max et concept!");
+			//go to the hell
+		}
 		switch ($tab[0]){
 			case 1:$dist_id="sim_lin";
 			break;
@@ -428,7 +431,10 @@ class SemanticDistanceController extends FOSRestController{
 			case 4:$dist_id="sim_schlicker";
 			break;
 		}
-
+		
+		$distance_max=($distance_max*$this->getMaxDistance($dist_id))/100;
+		//produit en croix en fonction du type de distance choisi par l'utilisateur
+		
 		$em=$this->getDoctrine()->getEntityManager();
 		$query=$em->createQueryBuilder()
 		->select("sd.".$dist_id.", sd.concept_1, sd.concept_2")

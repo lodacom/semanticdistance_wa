@@ -32,8 +32,30 @@ $(function() {
     	});
 		}
 	});
+    $('#ontology').autocomplete({
+		source : function(requete, reponse){
+    	var motcle = $('#concept_1').val()+"/"+$('#ontology').val();
+    	var objData = {};
+    	objData = { search: motcle };
+    	$.ajax({
+        	type:"POST",
+        	url : "{{path('acme_biomedical_search_ontology_with_term')}}",
+        	dataType : 'json',
+        	data : objData,
+
+        	success : function(donnee){
+            	reponse($.map(donnee, function(objet){
+                	return objet;
+            	}));
+        	}
+    	});
+		}
+	});
     $("#concept_1").focusin(function(){
 			this.value = '';
+	});
+    $("#ontology").focusin(function(){
+		this.value = '';
 	});
     $("#change").click(function(){
     	$('#list_of_concepts').css('display', 'none');
@@ -59,11 +81,18 @@ $(function() {
 	<fieldset>
 		<legend>Trouver tous les concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
-			{% if distances is not null %}
+			{% if distances is defined %}
 			value="{{ distances.concept_1.getName() }}" 
 			{% else %}
 			value="Entrer un concept, ex Melanoma" 
 			{% endif %} /> 
+			<label for="ontology">Ontologies contenant le
+			concept:</label> <input type="text" id="ontology" name="ontology"
+			{% if ontology is defined %}
+			value="{{ ontology }}"
+			{% else %}
+			value="Entrer un nom d'ontology, ex NCI Thesaurus"
+			{% endif %} />
 		<label for="dist_id">Distance sémantique:</label>	
 		<select name="dist_id" id="dist_id">
 			<option value="1:sim_lin">Lin</option>
@@ -73,7 +102,7 @@ $(function() {
 		</select>
 		<label for="distance_max">Distance maximale:</label>
 		<input type="number" id="distance_max" name="distance_max" style="border:0; color:#f6931f; font-weight:bold;"/>
-		<div id="slider-range-max" style="width:300px;float: right;margin-right: 45%"></div>
+		<div id="slider-range-max" style="width:300px;float: right;margin-right: 20%"></div>
 		<br>
 		<input class="home_button" type="submit" value="Chercher"/>	
 	</fieldset>
@@ -396,9 +425,21 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
  			nodes:{
  				{% for i in 0..graph.getSizeOfTab() %}
  				{% if i==graph.getSizeOfTab() %}
+ 				{% if graph.hasParentInResults(graph.getNodeForService2(i)) %}
+ 				"{{ graph.getNodeForService2(i).getName() }}":{color:"red", alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' }
+ 				{% elseif  graph.hasChildInResults(graph.getNodeForService2(i)) %}
+ 				"{{ graph.getNodeForService2(i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' }
+ 				{% else %}
  				"{{ graph.getNodeForService2(i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' }
+ 				{% endif %}
+ 				{% else %}
+ 				{% if graph.hasParentInResults(graph.getNodeForService2(i)) %}
+ 				"{{ graph.getNodeForService2(i).getName() }}":{color:"red", alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' },
+ 				{% elseif  graph.hasChildInResults(graph.getNodeForService2(i)) %}
+ 				"{{ graph.getNodeForService2(i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' },
  				{% else %}
  				"{{ graph.getNodeForService2(i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNodeForService2(i).getAcronym()}}&full_id={{  graph.getNodeForService2(i).getFullId()}}' },
+ 				{% endif %}
  				{% endif %}
  				{% endfor %}
  		 	},
@@ -406,13 +447,14 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
  		 		{% for i in 0..graph.getSizeOfTab() %}
  		 		{% if i==graph.getSizeOfTab() %}
  		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null%}
-"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
+				"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
 					"{{ graph.getNodeForService2(i).getName() }}":{}
 					}
 		 		{% endif %}
  		 		{% else %}
  		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null%}
-"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
+ 		 		
+				"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
 						"{{ graph.getNodeForService2(i).getName() }}":{}
 						},
  		 		{% endif %}

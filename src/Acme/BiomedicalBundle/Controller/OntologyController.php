@@ -30,9 +30,6 @@ class OntologyController extends FOSRestController{
 	 *   }
 	 * )
 	 *
-	 * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing notes.")
-	 * @Annotations\QueryParam(name="limit", requirements="\d+", default="5", description="How many ontologies to return.")
-	 *
 	 * @Annotations\View(templateVar="ontologies")
 	 *
 	 *
