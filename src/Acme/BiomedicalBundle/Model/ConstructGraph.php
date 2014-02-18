@@ -185,7 +185,7 @@ class ConstructGraph {
 		$node=null;
 		if (!is_null($relation)){
 			$parent_concept_id=$relation->getParentConceptId();//on récupère l'identifiant du père
-			if (!$this->isInResults($concept_id)){
+			if (!$this->isInResults($parent_concept_id)){
 				return null;
 			}
 			
@@ -207,7 +207,7 @@ class ConstructGraph {
 	 * Faux sinon (ce qui veut dire qu'il est en position d'ancêtre commun)
 	 */
 	public function hasParentInResults(Node $node){
-		if ($this->getParentOfNode($node)==null){
+		if (is_null($this->getParentOfNode($node))){
 			return false;
 		}else{
 			return true;

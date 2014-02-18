@@ -446,13 +446,13 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
  		 	edges:{
  		 		{% for i in 0..graph.getSizeOfTab() %}
  		 		{% if i==graph.getSizeOfTab() %}
- 		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null%}
+ 		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null %}
 				"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
-					"{{ graph.getNodeForService2(i).getName() }}":{}
+						"{{ graph.getNodeForService2(i).getName() }}":{}
 					}
 		 		{% endif %}
  		 		{% else %}
- 		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null%}
+ 		 		{%  if graph.getParentOfNode(graph.getNodeForService2(i)) is not null  %}
  		 		
 				"{{ graph.getParentOfNode(graph.getNodeForService2(i)).getName() }}":{
 						"{{ graph.getNodeForService2(i).getName() }}":{}
@@ -475,7 +475,15 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
 </script>
 <button id="change" class="home_button">Voir le graphe généré</button> 	
 <button id="change_again" class="home_button">Voir les résultats</button> 				
-<div id="graph"> 				
+<div id="graph">
+<div id="color_code">
+<span id="color_legend">Légendes:</span><br>
+<span id="root_color">Couleur des ancêtres communs</span><br>
+<span id="children_color">Couleur des fils</span><br>
+<span id="leaf_color">Couleur des feuilles</span><br>
+<span id="color_legend">Note:</span><br>
+Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPortal.<br>
+</div> 				
 <span id="canvas_title">Concepts around concepts</span> 	 		 	
 <div id="nav">
 	<canvas id="viewport" title="Concepts around concepts" width="800" height="800" style="margin-left: 5%;position: relative;"></canvas>

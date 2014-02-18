@@ -215,13 +215,13 @@ class SemanticDistanceController extends FOSRestController{
 	/**
 	 * Fonction permettant de construir l'objet complexe SemanticDistanceTwoConcepts
 	 * en fonction des trois paramètres ci-dessous et de le renvoyer
-	 * @param integer $semantic_id
+	 * @param SemanticDistance $semantic_object
 	 * @param integer $concept_1
 	 * @param integer $concept_2
 	 * @param string  $include
 	 * @return \Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts
 	 */
-	private function returnSemanticDistanceTwoConcepts(SemanticDistance $semantic_object,$concept_1,$concept_2,$include=null){
+	private function returnSemanticDistanceTwoConcepts($semantic_object,$concept_1,$concept_2,$include=null){
 		if (is_null($semantic_object)){
 			return null;
 		}
