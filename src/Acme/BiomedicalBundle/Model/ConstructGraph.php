@@ -85,18 +85,18 @@ class ConstructGraph {
 		$node_array=array();
 		
 		$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
-		->findOneBy(array('concept_id'=>$common_ancestor));
+		->findOneBy(array('concept_id'=>$concept_leaf));
 		$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
-		->find($common_ancestor);
+		->find($concept_leaf);
 		$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
 		->find($concept->getOntologyId());
-		//on met l'ancêtre commun en début de pile
+		//on met la feuille en fin de pile (voir le reverse)
 		//\Doctrine\Common\Util\Debug::dump($term->getName());
 		
 		$node=new Node($term->getName(), $concept,$ontology);
 		array_push($node_array, $node);
 		
-		while ($i>0&&strcmp($tab[$i], $common_ancestor)!=0){
+		while ($i>0&&($tab[$i]!=$common_ancestor)){
 			$concept=$tab[$i];
 			$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
 			->findOneBy(array('concept_id'=>$concept));
@@ -114,17 +114,17 @@ class ConstructGraph {
 		}
 		
 		$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
-		->findOneBy(array('concept_id'=>$concept_leaf));
+		->findOneBy(array('concept_id'=>$common_ancestor));
 		$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
-		->find($concept_leaf);
+		->find($common_ancestor);
 		$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
 		->find($concept->getOntologyId());
-		//on met la feuille en fin de pile
+		//on met l'ancêtre commun en début de pile (voir le reverse)
 		//\Doctrine\Common\Util\Debug::dump($term->getName());
-		
 		$node=new Node($term->getName(), $concept,$ontology);
 		array_push($node_array, $node);
 		
+		$node_array=array_reverse($node_array);//on inverse le tableau pour obtenir le bon ordre
 		return $node_array;
 	}
 	
@@ -137,12 +137,13 @@ class ConstructGraph {
 	private function getCommonAncestor($path_to_root_1,$path_to_root_2){
 		$tab_1=split("\.", $path_to_root_1);
 		$tab_2=split("\.", $path_to_root_2);
+		
 		//on parcours le tableau de plus petit donc le path le plus court d'où tab1
 		$i=0;
-		while ($i<count($tab_1)&&strcmp($tab_1[$i], $tab_2[$i])!=0) {
+		while ($i<count($tab_1)&&($tab_1[$i]==$tab_2[$i])) {
 			$i++;//on s'arrête quand on a trouvé un identifiant égal (donc l'ancêtre commun)
 		}
-		return $tab_1[$i];
+		return $tab_1[$i-1];
 	}
 	
 	/*
@@ -247,7 +248,7 @@ class ConstructGraph {
 		$retour=array();
 		for ($i=0;$i<count($relation);$i++){
 			$child=$relation[$i]->getConceptId();
-			if (strcmp($child, $child_node_inspected->getConcept()->getId())!=0){
+			if ($child!=$child_node_inspected->getConcept()->getId()){
 				if ($this->isInResults($child)){
 					
 					$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
@@ -296,7 +297,7 @@ class ConstructGraph {
 	 */
 	private function isInResults($concept_id){
 		$i=0;
-		while ($i<count($this->save_results)&&strcmp($this->save_results[$i]->getConcept()->getId(),$concept_id)!=0){
+		while ($i<count($this->save_results)&&($this->save_results[$i]->getConcept()->getId()!=$concept_id)){
 			$i++;
 		}
 		if ($i==count($this->save_results)){

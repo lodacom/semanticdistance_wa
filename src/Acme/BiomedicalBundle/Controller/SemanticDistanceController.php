@@ -222,6 +222,9 @@ class SemanticDistanceController extends FOSRestController{
 	 * @return \Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts
 	 */
 	private function returnSemanticDistanceTwoConcepts(SemanticDistance $semantic_object,$concept_1,$concept_2,$include=null){
+		if (is_null($semantic_object)){
+			return null;
+		}
 		$name_concept_1=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
 		->findOneBy(array('concept_id'=>$concept_1));
 		$name_concept_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
@@ -261,6 +264,10 @@ class SemanticDistanceController extends FOSRestController{
 				if (is_null($recup_id)){
 					$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2,'concept_2'=>$concept_1));
+					if (is_null($recup_id)){
+						throw new HttpException(404,"Il n'y a pas de distance existante entre: ".$concept_1."
+						et: ".$concept_2);
+					}
 				}
 				$distances=$this->singleDistance($recup_id,$dist_id);
 				
@@ -291,6 +298,10 @@ class SemanticDistanceController extends FOSRestController{
 				if (is_null($recup_id_2)){
 					$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
+					if (is_null($recup_id_2)){
+						throw new HttpException(404,"Il n'y a pas de distance existante entre: ".$concept_1_id."
+						et: ".$concept_2_id);
+					}
 				}
 				$distances=$this->singleDistance($recup_id_2,$dist_id);
 				$distances=$this->returnSemanticDistanceTwoConcepts($distances, $concept_1_id, $concept_2_id,$include);
@@ -388,7 +399,7 @@ class SemanticDistanceController extends FOSRestController{
 			}
 			return $results;
 		}else{
-			if (preg_match("[URI]", $concept)){
+			if (preg_match("URI", $concept)){
 				$concept_recup=$paramFetcher->get('concept_1');
 				if (!preg_match("(http.+)", $concept_recup)){
 					throw new HttpException(403,"Vous devez mettre un champ de type url pour le
@@ -416,7 +427,7 @@ class SemanticDistanceController extends FOSRestController{
 	 */
 	private function multiDistances($dist_id,$distance_max,$concept){
 		$tab=split(":", $dist_id);
-		if (!preg_match("(\d+)", $dist_id)&&!preg_match("(\d+)", $distance_max)&&!preg_match("(\d+)", $concept)){
+		if (!preg_match("[\d+]", $dist_id)&&!preg_match("[\d+]", $distance_max)&&!preg_match("[\d+]", $concept)){
 			throw new HttpException(403,"Vous devez mettre un champ de type entier pour le champ
 						dist_id et distance_max et concept!");
 			//go to the hell
@@ -439,7 +450,7 @@ class SemanticDistanceController extends FOSRestController{
 		$query=$em->createQueryBuilder()
 		->select("sd.".$dist_id.", sd.concept_1, sd.concept_2")
 		->from("AcmeBiomedicalBundle:SemanticDistance", "sd")
-		->where("sd.".$dist_id."<= :distance")
+		->where("sd.".$dist_id.">= :distance")
 		->andWhere("sd.concept_1 = :id")
 		->setParameters(array("distance"=>$distance_max,"id"=>$concept))
 		->orderBy("sd.".$dist_id,"DESC")
