@@ -419,7 +419,7 @@ class SemanticDistanceController extends FOSRestController{
 			
 			return $results;
 		}else{
-			if (preg_match("URI", $concept)){
+			if (preg_match("(URI)", $concept)){
 				$concept_recup=$paramFetcher->get('concept_1');
 				if (!preg_match("(http.+)", $concept_recup)){
 					throw new HttpException(403,"Vous devez mettre un champ de type url pour le
@@ -429,12 +429,14 @@ class SemanticDistanceController extends FOSRestController{
 				$concept_1=urldecode($concept_recup);
 				$concept_id=$this->retreiveConceptId($concept_1);
 			
-				$results=$this->multiDistances($dist_id, $distance_max, $concept);
+				$results=$this->multiDistances($dist_id, $distance_max, $concept_id);
 				if (empty($results->semantic_distances)) {
 					throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
 						et l'identifiant de distance: ".$dist_id);
 				}
 				return $results;
+			}else{
+				throw new HttpException(403,"Vous devez rentrer la chaîne de caractère URI pour pouvoir passer une URI!");
 			}
 		}
 	}
