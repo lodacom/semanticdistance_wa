@@ -70,12 +70,12 @@ class SemanticDistanceController extends FOSRestController{
 				throw new HttpException(403,"Vous devez mettre un champ de type url!");
 				//go to the hell
 			}
+			$concept_1=$this->retreiveConceptId($concept_1);
+			$concept_2=$this->retreiveConceptId($concept_2);
 		}
 		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
 		$constructGraph=new ConstructGraph($this->getDoctrine());
-		$concept_1=$this->retreiveConceptId($concept_1);
-		$concept_2=$this->retreiveConceptId($concept_2);
 
 		$constructGraph->getListAncestorsConcepts($concept_1, $concept_2);
 		
