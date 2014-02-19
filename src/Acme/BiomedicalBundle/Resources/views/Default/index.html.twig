@@ -65,50 +65,25 @@
 			<table width="100%">
 				<tr>
 					<form action="/search" method="get">
-						<td valign="top" width="33%">
+						<td valign="top" width="50%">
 							<fieldset>
 								<legend>Rechercher dans toutes les ontologies</legend>
 								<input type="text" id="search" name="search"
-									value="Entrer un concept, ex Melanoma" /> <input
+									value="Entrer un concept, ex Melanoma" size="24pt" /> <input
 									class="home_button" type="submit" value="Chercher">
 							</fieldset>
 						</td>
 					</form>
 					<form action="{{ path('acme_biomedical_ontology') }}" method="get">
-						<td valign="top" width="33%">
+						<td valign="top" width="50%">
 							<fieldset>
 								<legend>Rechercher une ontologie</legend>
 								<input type="text" id="searchOntology" name="searchOntology"
-									value="Entrer un nom d'ontology, ex NCI Thesaurus" /> <input
+									value="Entrer un nom d'ontology, ex NCI Thesaurus" size="34pt" /> <input
 									class="home_button" type="submit" value="Explorer">
 							</fieldset>
 						</td>
 					</form>
-					<td valign="top" width="33%">
-						<fieldset>
-							<legend>Rechercher les ressources</legend>
-							<input type="text" id="searchResources" name="searchResources"
-								value="Entrer un concept, ex Melanoma" /> <input
-								class="home_button" type="submit" value="Chercher">
-						</fieldset>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<fieldset>
-							<legend>Les ontologies les plus regardées</legend>
-						</fieldset>
-					</td>
-					<td>
-						<fieldset>
-							<legend>Les dernières notes</legend>
-						</fieldset>
-					</td>
-					<td>
-						<fieldset>
-							<legend>Les derniers mappings</legend>
-						</fieldset>
-					</td>
 				</tr>
 			</table>
 		</div>

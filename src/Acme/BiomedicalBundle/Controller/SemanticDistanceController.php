@@ -98,14 +98,20 @@ class SemanticDistanceController extends FOSRestController{
 		$recup=$this->getSemSimId($concept_1, $ontology);
 		//produit en croix effectué dans la méthode multiDistances
 		$results=$this->multiDistances($dist_id, $distance_max, $recup);
-		//TODO: construct a graph
-		$constructGraph=new ConstructGraph($this->getDoctrine());
-		$constructGraph->getAllNodesAroundConcept($results->semantic_distances);
+		if (empty($results->semantic_distances)){
+			$results=null;
+			$constructGraph=null;
+		}else{
+			//TODO: construct a graph
+			$constructGraph=new ConstructGraph($this->getDoctrine());
+			$constructGraph->getAllNodesAroundConcept($results->semantic_distances);
+		}
 		
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
 				'distances'=>$results,
-				'ontology'=>$ontology,		
+				'ontology'=>$ontology,	
+				'concept_1'=>$concept_1,			
 				'graph'=>$constructGraph));
 	}
 	
@@ -257,6 +263,9 @@ class SemanticDistanceController extends FOSRestController{
 	 * @return object \Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts
 	 */
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null,$include=null){
+		if (empty($concept_1)||empty($concept_2)){
+			throw new HttpException(403,"Les filtres concept_1 et concept_2 sont obligatoires!");
+		}
 		if ((preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2))||(is_int($concept_1)&&is_int($concept_2))){
 			if (!is_null($dist_id)){
 				$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
@@ -265,8 +274,9 @@ class SemanticDistanceController extends FOSRestController{
 					$recup_id=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2,'concept_2'=>$concept_1));
 					if (is_null($recup_id)){
-						throw new HttpException(404,"Il n'y a pas de distance existante entre: ".$concept_1."
-						et: ".$concept_2);
+						throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec le concept: ".$concept_1."
+						et le concept: ".$concept_2);
+						return null;
 					}
 				}
 				$distances=$this->singleDistance($recup_id,$dist_id);
@@ -299,8 +309,9 @@ class SemanticDistanceController extends FOSRestController{
 					$recup_id_2=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
 					if (is_null($recup_id_2)){
-						throw new HttpException(404,"Il n'y a pas de distance existante entre: ".$concept_1_id."
-						et: ".$concept_2_id);
+						throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec le concept: ".$concept_1_id."
+						et le concept: ".$concept_2_id);
+						return null;
 					}
 				}
 				$distances=$this->singleDistance($recup_id_2,$dist_id);
@@ -313,6 +324,11 @@ class SemanticDistanceController extends FOSRestController{
 				if (is_null($distances_4)){
 					$distances_4=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:SemanticDistance")
 					->findOneBy(array('concept_1'=>$concept_2_id,'concept_2'=>$concept_1_id));
+					if (is_null($distances_4)){
+						throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec le concept: ".$concept_1_id."
+						et le concept: ".$concept_2_id);
+						return null;
+					}
 				}
 				$distances_4=$this->returnSemanticDistanceTwoConcepts($distances_4, $concept_1_id, $concept_2_id,$include);
 				return $distances_4;//OK fonctionne
@@ -384,19 +400,23 @@ class SemanticDistanceController extends FOSRestController{
 	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
-	 *	@param integer     $concept      the concept id or the string URI if you want to pass an URI.Mandatory. 
+	 *	@param integer     $concept      the concept id or the string "URI" if you want to pass an URI.Mandatory. 
 	 *  
 	 * @return object
 	 */
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
+		if (empty($dist_id)||empty($distance_max)||empty($concept)){
+			throw new HttpException(403,"Les filtres dist_id et distance_max sont obligatoires!");
+		}
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
 			$results=$this->multiDistances($dist_id, $distance_max, $concept);
-			if ($results==null) {
+			if (empty($results->semantic_distances)) {
 				throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
 						et l'identifiant de distance: ".$dist_id);
 			}
+			
 			return $results;
 		}else{
 			if (preg_match("URI", $concept)){
@@ -410,7 +430,7 @@ class SemanticDistanceController extends FOSRestController{
 				$concept_id=$this->retreiveConceptId($concept_1);
 			
 				$results=$this->multiDistances($dist_id, $distance_max, $concept);
-				if ($results==null) {
+				if (empty($results->semantic_distances)) {
 					throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
 						et l'identifiant de distance: ".$dist_id);
 				}
@@ -423,13 +443,13 @@ class SemanticDistanceController extends FOSRestController{
 	 * @param integer $dist_id le type de la distance
 	 * @param integer $distance_max la distance maximale choisie par l'utilisateur
 	 * @param integer $concept l'identifiant du concept
-	 * @return array of TermConcept
+	 * @return SemanticDistanceCollection
 	 */
 	private function multiDistances($dist_id,$distance_max,$concept){
 		$tab=split(":", $dist_id);
-		if (!preg_match("[\d+]", $dist_id)&&!preg_match("[\d+]", $distance_max)&&!preg_match("[\d+]", $concept)){
+		if (!preg_match("[\d+]", $dist_id)&&!preg_match("[\d+]", $distance_max)){
 			throw new HttpException(403,"Vous devez mettre un champ de type entier pour le champ
-						dist_id et distance_max et concept!");
+						dist_id et distance_max!");
 			//go to the hell
 		}
 		switch ($tab[0]){

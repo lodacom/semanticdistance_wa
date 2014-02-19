@@ -81,10 +81,11 @@ $(function() {
 	<fieldset>
 		<legend>Trouver tous les concepts</legend>
 		<input type="text" id="concept_1" name="concept_1"
-			{% if distances is defined %}
-			value="{{ distances.concept_1.getName() }}" 
+			{% if concept_1 is defined %}
+			value="{{ concept_1 }}" 
 			{% else %}
 			value="Entrer un concept, ex Melanoma" 
+			size="24pt"
 			{% endif %} /> 
 			<label for="ontology">Ontologies contenant le
 			concept:</label> <input type="text" id="ontology" name="ontology"
@@ -92,6 +93,7 @@ $(function() {
 			value="{{ ontology }}"
 			{% else %}
 			value="Entrer un nom d'ontology, ex NCI Thesaurus"
+			size="34pt"
 			{% endif %} />
 		<label for="dist_id">Distance sémantique:</label>	
 		<select name="dist_id" id="dist_id">
@@ -102,7 +104,7 @@ $(function() {
 		</select>
 		<label for="distance_max">Distance maximale:</label>
 		<input type="number" id="distance_max" name="distance_max" style="border:0; color:#f6931f; font-weight:bold;"/>
-		<div id="slider-range-max" style="width:300px;float: right;margin-right: 20%"></div>
+		<div id="slider-range-max" style="width:300px;float: right;margin-right: 10%"></div>
 		<br>
 		<input class="home_button" type="submit" value="Chercher"/>	
 	</fieldset>
