@@ -74,6 +74,9 @@ class SemanticDistanceController extends FOSRestController{
 		
 		$results=$this->singleDistanceParam($concept_1, $concept_2);
 		$constructGraph=new ConstructGraph($this->getDoctrine());
+		$concept_1=$this->retreiveConceptId($concept_1);
+		$concept_2=$this->retreiveConceptId($concept_2);
+
 		$constructGraph->getListAncestorsConcepts($concept_1, $concept_2);
 		
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',
