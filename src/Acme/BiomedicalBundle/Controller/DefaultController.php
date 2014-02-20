@@ -4,6 +4,7 @@ namespace Acme\BiomedicalBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DefaultController extends Controller
 {
@@ -16,6 +17,23 @@ class DefaultController extends Controller
     	$result=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
     	->findOneBy(array('name'=>$ontology));
     	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','ontology'=>$result));
+    }
+    
+    public function changeLanguageAction($langue=null){
+    	if($langue != null){
+    		// On enregistre la langue en session
+    		$request = $this->getRequest();
+    		$locale = $request->getLocale();
+    		$request->setLocale($langue);
+    		//$this->container->get('session')->set('locale', $langue);
+    	}
+    	
+    	// on tente de rediriger vers la page d'origine
+    	$url = $this->container->get('request')->headers->get('referer');
+    	if(empty($url)) {
+    		$url = $this->container->get('router')->generate('acme_biomedical_homepage');
+    	}
+    	return new RedirectResponse($url);
     }
     
     /**

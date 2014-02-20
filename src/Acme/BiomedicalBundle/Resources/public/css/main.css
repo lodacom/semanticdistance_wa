@@ -24,6 +24,11 @@ ul li{
 	list-style: none;	
 }
 
+#flag_1{
+	margin-left: 45%;
+	margin-top:0.3%;
+}
+
 .home_button{
 	height: 37px;
 	width: 106px;

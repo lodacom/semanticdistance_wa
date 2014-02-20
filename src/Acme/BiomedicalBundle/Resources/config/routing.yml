@@ -32,7 +32,10 @@ acme_biomedical_search_term_with_ontology:
       _method: POST
       
 ########################################################################################  
-            
+acme_biomedical_language:
+    pattern: /choose_language/{langue}
+    defaults: { _controller: AcmeBiomedicalBundle:Default:changeLanguage }
+                
 acme_biomedical_ontology:
     pattern:  /search_ontology
     defaults: { _controller: AcmeBiomedicalBundle:Default:goToOntologie }

@@ -46,6 +46,10 @@ class ConstructGraph {
 		}
 	}
 	
+	public function isEmpty(){
+		return $this->tab_of_Node_1==null;
+	}
+	
 	/**
 	 * Rempli les deux tableaux de noeuds dans l'ordre suivant:
 	 * racine vers feuille
@@ -60,18 +64,31 @@ class ConstructGraph {
 		
 		$path_to_root_1=$concept1_path->getPathToRoot();//de la racine jusqu'à son parent
 		$path_to_root_2=$concept2_path->getPathToRoot();//OK
-		
+
+		if (empty($path_to_root_1)||empty($path_to_root_2)){
+			$this->tab_of_Node_1=null;
+			$this->tab_of_Node_2=null;
+		}
 		$common_ancestor=null;
 		if (strlen($path_to_root_1)>=strlen($path_to_root_2)){
+			if (!empty($path_to_root_1)&&!empty($path_to_root_2)){
 			$common_ancestor=$this->getCommonAncestor($path_to_root_2, $path_to_root_1);
+			}
 		}else{
+			if (!empty($path_to_root_1)&&!empty($path_to_root_2)){
 			$common_ancestor=$this->getCommonAncestor($path_to_root_1, $path_to_root_2);
+			}
 		}//OK
 		//\Doctrine\Common\Util\Debug::dump($common_ancestor);
 		$tab_1=split("\.", $path_to_root_1);
 		$tab_2=split("\.", $path_to_root_2);
+		if (empty($path_to_root_1)||empty($path_to_root_2)){
+			$this->tab_of_Node_1=null;
+			$this->tab_of_Node_2=null;
+		}else{
 		$this->tab_of_Node_1=$this->getTermLinkToBioPortal($tab_1, $common_ancestor,$concept1);
 		$this->tab_of_Node_2=$this->getTermLinkToBioPortal($tab_2, $common_ancestor,$concept2);
+		}
 	}
 	
 	/**
@@ -142,6 +159,9 @@ class ConstructGraph {
 		$i=0;
 		while ($i<count($tab_1)&&($tab_1[$i]==$tab_2[$i])) {
 			$i++;//on s'arrête quand on a trouvé un identifiant égal (donc l'ancêtre commun)
+		}
+		if($i==0){
+			return $tab_1[count($tab_1)-1];
 		}
 		return $tab_1[$i-1];
 	}

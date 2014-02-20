@@ -120,7 +120,7 @@ javascripts %} {{ parent() }}
 	<br>
 	{% endif %} 
 {% endif %}
-{% if graph is defined and graph is not null %}
+{% if graph is defined and not graph.isEmpty() %}
 <script>
 /**
  * 
@@ -495,5 +495,7 @@ Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPor
 <div id="nav">
 	<canvas id="viewport" title="Least Common Ancestor" width="400" height="800" style="margin-left: 5%;position: relative;"></canvas>
 </div>
+{% else %}
+Désolé mais le graphe n'a pas pas pu être généré l'un des deux termes ne possèdent pas de path to root.
 {% endif %}
 {% endblock %}
