@@ -496,6 +496,8 @@ Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPor
 	<canvas id="viewport" title="Least Common Ancestor" width="400" height="800" style="margin-left: 5%;position: relative;"></canvas>
 </div>
 {% else %}
+{% if graph is defined %}
 Désolé mais le graphe n'a pas pas pu être généré l'un des deux termes ne possèdent pas de path to root.
+{% endif %}
 {% endif %}
 {% endblock %}
