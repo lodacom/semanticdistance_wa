@@ -35,6 +35,12 @@ acme_biomedical_search_term_with_ontology:
 acme_biomedical_language:
     pattern: /choose_language/{langue}
     defaults: { _controller: AcmeBiomedicalBundle:Default:changeLanguage }
+
+acme_biomedical_search_term:
+    pattern: /search
+    defaults: { _controller: AcmeBiomedicalBundle:Default:goToTerm }
+    requirements:
+      _method: GET
                 
 acme_biomedical_ontology:
     pattern:  /search_ontology

@@ -1,0 +1,13 @@
+{% extends 'AcmeBiomedicalBundle::main.html.twig' %} 
+{% block content %}
+{{ parent() }}
+<h3>{{ term.getName }}</h3>
+<span id="definition">
+{% if definition is defined %}
+<b>Définition:</b><br>
+{{ definition }}
+{% else %}
+Il n'y a pas de définition pour le terme: {{ term.getName }}
+{% endif %}
+</span>
+{% endblock %}

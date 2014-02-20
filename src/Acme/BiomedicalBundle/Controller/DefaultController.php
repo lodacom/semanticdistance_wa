@@ -5,6 +5,7 @@ namespace Acme\BiomedicalBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Acme\BiomedicalBundle\Entity\Definition;
 
 class DefaultController extends Controller
 {
@@ -17,6 +18,19 @@ class DefaultController extends Controller
     	$result=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
     	->findOneBy(array('name'=>$ontology));
     	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','ontology'=>$result));
+    }
+    
+    public function goToTermAction(){
+    	$term=$_GET['search'];
+    	$term_result=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Term")
+    	->findOneBy(array('name'=>$term));
+    	$definition=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Definition")
+    	->findOneBy(array('concept_id'=>$term_result->getConceptId()));
+    	if (is_null($definition)){
+    		return $this->render('AcmeBiomedicalBundle:Default:term.html.twig',array('title'=>'Term','term'=>$term_result));
+    	}else{
+    		return $this->render('AcmeBiomedicalBundle:Default:term.html.twig',array('title'=>'Term','term'=>$term_result,'definition'=>$definition->getDefinition()));
+    	}
     }
     
     public function changeLanguageAction($langue=null){
