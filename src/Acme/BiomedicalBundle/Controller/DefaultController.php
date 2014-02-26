@@ -6,6 +6,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Acme\BiomedicalBundle\Entity\Definition;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Translation\Writer\TranslationWriter;
+use Symfony\Component\Translation\Translator;
 
 class DefaultController extends Controller
 {
@@ -34,20 +37,20 @@ class DefaultController extends Controller
     }
     
     public function changeLanguageAction($langue=null){
+    	$request = $this->getRequest();
     	if($langue != null){
-    		// On enregistre la langue en session
-    		$request = $this->getRequest();
-    		$locale = $request->getLocale();
+    		//\Doctrine\Common\Util\Debug::dump($langue);
     		$request->setLocale($langue);
-    		//$this->container->get('session')->set('locale', $langue);
+    		//$request->setDefaultLocale($langue);
+    		//$request->getSession()->set('_locale', $langue);
     	}
-    	
+    	$this->get('translator')->setLocale($langue);
     	// on tente de rediriger vers la page d'origine
     	$url = $this->container->get('request')->headers->get('referer');
     	if(empty($url)) {
     		$url = $this->container->get('router')->generate('acme_biomedical_homepage');
     	}
-    	return new RedirectResponse($url);
+    	return $this->render('AcmeBiomedicalBundle:Default:index.html.twig',array('title'=>'BioMedicalSemantic'));
     }
     
     /**

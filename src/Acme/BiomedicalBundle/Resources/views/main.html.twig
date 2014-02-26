@@ -23,13 +23,15 @@
 		<div id="head">
 			<ul id="menu">
 				<li class="nav_text"><a href="{{path('acme_biomedical_homepage')}}">BioMedicalPortal</a></li>
-				<li class="nav_text"><a href="#">Distances sémantiques</a>
+				<li class="nav_text"><a href="#">{% trans %}distances.semantiques{% endtrans %}</a>
 					<ul>
 						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_two_concepts')}}">{% trans %}Entre deux concepts{% endtrans %}</a></li>
 						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_concept_dist')}}">Avec un concept et une distance</a></li>
 					</ul>
 				</li>
+				{% block doc %}
 				<li class="nav_text"><a href="api/doc/">Documentation API</a></li>
+				{% endblock %}
 			</ul>
 			<a href="{{path('acme_biomedical_language',{'langue':'fr'})}}" > 
 			<img id="flag_1" alt="Drapeau français" src="{{ asset('bundles/acmebiomedical/images/drapeau-Francais.jpg') }}" title="Drapeau français" />
