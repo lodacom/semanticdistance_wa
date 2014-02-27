@@ -70,7 +70,7 @@ javascripts %} {{ parent() }}
 {% endblock %} {% block content %} {{ parent() }}
 <form action="{{ path('acme_biomedical_sdtc') }}" method="post">
 	<fieldset>
-		<legend>Calculer la distance sémantique entre deux concepts</legend>
+		<legend>{% trans %}calculer.la.distance.semantique.entre.deux.concepts{% endtrans %}</legend>
 		<input type="text" id="concept_1" name="concept_1"
 			{% if concept_1 is defined %}
 			value="{{ concept_1 }}"
@@ -92,31 +92,31 @@ javascripts %} {{ parent() }}
 			size="24pt"
 			{% endif %} />
 	</fieldset>
-	OU
+	{% trans %}ou{% endtrans %}
 	<fieldset>
-		<legend>Calculer la distance sémantique entre deux URIs</legend>
+		<legend>{% trans %}calculer.la.distance.semantique.entre.deux.URIs{% endtrans %}</legend>
 		<input type="url" id="concept_1_full_id" name="concept_1_full_id" size="50pt"/> <input
 			type="url" id="concept_2_full_id" name="concept_2_full_id" size="50pt"/>
 	</fieldset>
-	<input class="home_button" type="submit" value="Calculer">
+	<input class="home_button" type="submit" value="{% trans %}calculer{% endtrans %}">
 </form>
 {% if distances is defined %} 
 	{% if distances is not null %}
-	<h4>Distances entre {{ distances.getTerm1().getName() }} et {{
+	<h4>{% trans %}distances.entre{% endtrans %} {{ distances.getTerm1().getName() }} {% trans %}et{% endtrans %} {{
 		distances.getTerm2().getName() }}</h4>
-	Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}
+	{% trans %}distance.de.Lin{% endtrans %}: {{ distances.getSemanticDistance().getSimLin() }}
 	<br>
-	Distance de Wu Palmer: {{
+	{% trans %}distance.de.Wu.Palmer{% endtrans %}: {{
 	distances.getSemanticDistance().getSimWuPalmer() }}
 	<br>
-	Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}
+	{% trans %}distance.de.Resnik{% endtrans %}: {{ distances.getSemanticDistance().getSimResnik() }}
 	<br>
-	Distance de Schlicker: {{
+	{% trans %}distance.de.Schlicker{% endtrans %}: {{
 	distances.getSemanticDistance().getSimSchlicker() }}
 	<br>
 	
 	{% else %} 
-	Il n'y a pas de données pour ces deux concepts
+	{% trans %}pas.de.donnees.pour.ces.deux.concepts{% endtrans %}
 	<br>
 	{% endif %} 
 {% endif %}
@@ -484,12 +484,12 @@ javascripts %} {{ parent() }}
  })(this.jQuery)
 </script>
 <div id="color_code">
-<span id="color_legend">Légendes:</span><br>
-<span id="root_color">Couleur de la racine</span><br>
-<span id="children_color">Couleur des fils</span><br>
-<span id="leaf_color">Couleur des feuilles</span><br>
-<span id="color_legend">Note:</span><br>
-Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPortal.<br>
+<span id="color_legend">{% trans %}legendes{% endtrans %}:</span><br>
+<span id="root_color">{% trans %}couleur.de.la.racine{% endtrans %}</span><br>
+<span id="children_color">{% trans %}couleur.des.fils{% endtrans %}</span><br>
+<span id="leaf_color">{% trans %}couleur.des.feuilles{% endtrans %}</span><br>
+<span id="color_legend">{% trans %}note{% endtrans %}:</span><br>
+{% trans %}noeuds.cliquables.redirigent{% endtrans %}.<br>
 </div>
 <span id="canvas_title">Least Common Ancestor</span> 	 		 	
 <div id="nav">
@@ -497,7 +497,7 @@ Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPor
 </div>
 {% else %}
 {% if graph is defined %}
-Désolé mais le graphe n'a pas pas pu être généré l'un des deux termes ne possèdent pas de path to root.
+{% trans %}desole.graphe.pas.genere{% endtrans %}.
 {% endif %}
 {% endif %}
 {% endblock %}

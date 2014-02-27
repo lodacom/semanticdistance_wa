@@ -87,6 +87,7 @@ class SemanticDistanceController extends FOSRestController{
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function searchCalculateDistanceAction(){
+		$this->changeLanguage();
 		$concept_1=$_POST['concept_1'];
 		$concept_2=$_POST['concept_2'];
 		$ontology=$_POST['ontology'];
@@ -125,6 +126,7 @@ class SemanticDistanceController extends FOSRestController{
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	public function searchConceptsInDistanceAction(){
+		$this->changeLanguage();
 		$concept_1=$_POST['concept_1'];
 		$dist_id=$_POST['dist_id'];
 		$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur

@@ -10,4 +10,24 @@ rechercher.une.ontologie: Search an ontology
 entrer.un.concept.ex.Melanoma:  Enter concept, e.g. Melanoma
 chercher: Search
 entrer.un.nom.ontologie.ex.NCI.Thesaurus: Enter ontology name, e.g. NCI Thesaurus
-explorer: Explore 
+explorer: Explore
+#######################################################################################################
+ou: OR
+calculer.la.distance.semantique.entre.deux.concepts:  Calculate the semantic distance between two concepts
+calculer.la.distance.semantique.entre.deux.URIs:  Calculate the semantic distance between two URIs
+calculer: Calculate
+distance.de.Lin:  Lin distance
+distance.de.Wu.Palmer: Wu Palmer distance
+distance.de.Resnik: Resnik distance
+distance.de.Schlicker:  Schlicker distance
+pas.de.donnees.pour.ces.deux.concepts: There is no data for these two concepts
+distances.entre:  Distances between
+et: and
+legendes: Legends
+couleur.de.la.racine: Ancestor color
+couleur.des.fils: Sons color
+couleur.des.feuilles: Leafs color
+note: Note
+noeuds.cliquables.redirigent: Nodes are clickable and redirect to the corresponding term in BioPortal  
+desole.graphe.pas.genere: Sorry but the graph has not been generated not one of the two terms do not have path to root 
+#######################################################################################################

@@ -11,3 +11,23 @@ entrer.un.concept.ex.Melanoma:  Entrer un concept, ex Melanoma
 chercher: Chercher
 entrer.un.nom.ontologie.ex.NCI.Thesaurus: Entrer un nom d'ontologie, ex NCI Thesaurus
 explorer: Explorer
+#######################################################################################################
+ou: OU
+calculer.la.distance.semantique.entre.deux.concepts:  Calculer la distance sémantique entre deux concepts
+calculer.la.distance.semantique.entre.deux.URIs:  Calculer la distance sémantique entre deux URIs
+calculer: Calculer
+distance.de.Lin:  Distance de Lin
+distance.de.Wu.Palmer:  Distance de Wu Palmer
+distance.de.Resnik: Distance de Resnik
+distance.de.Schlicker:  Distance de Schlicker
+pas.de.donnees.pour.ces.deux.concepts:  Il n'y a pas de données pour ces deux concepts
+distances.entre:  Distances entre
+et: et
+legendes: Légendes
+couleur.de.la.racine: Couleur de la racine
+couleur.des.fils: Couleur des fils
+couleur.des.feuilles: Couleur des feuilles
+note: Note
+noeuds.cliquables.redirigent: Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPortal
+desole.graphe.pas.genere: Désolé mais le graphe n'a pas pas pu être généré l'un des deux termes ne possèdent pas de path to root
+#######################################################################################################
