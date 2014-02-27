@@ -24,17 +24,48 @@ use Acme\BiomedicalBundle\Model\BioPortalApiRest;
 use Acme\BiomedicalBundle\Entity\Ontology;
 use Acme\BiomedicalBundle\Model\ConstructGraph;
 use Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class SemanticDistanceController extends FOSRestController{
 	
 	const SESSION_CONTEXT_DISTANCE = 'distance';
 	
 	public function indexAction(){
+		$this->changeLanguage();
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance.html.twig',array('title'=>'Distance sémantique'));
 	}
 	
 	public function indexConceptAction(){
+		$this->changeLanguage();
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
+	}
+	
+	public function changeLanguage(){
+		$langue=null;
+		if (!is_null($this->container)){
+			$langue = $this->container->get('request')->get("_locale");
+		}
+		if (!is_null($langue)){
+			//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
+			$request = $this->getRequest();
+			$request->setDefaultLocale($langue);
+			$request->setLocale($langue);
+			$session = new Session();
+			$session->start();
+			$session->set('_locale', $langue);
+		}else{
+			$session = new Session();
+			$session->start();
+			if (!is_null($session->get('_locale'))){
+				$langue=$session->get('_locale');
+			}
+			if (!is_null($langue)){
+				//si aucune action on regarde s'il y en a déjà une qui a été effectuée à travers la session
+				$request = $this->getRequest();
+				$request->setDefaultLocale($langue);
+				$request->setLocale($langue);
+			}
+		}
 	}
 	
 	/**

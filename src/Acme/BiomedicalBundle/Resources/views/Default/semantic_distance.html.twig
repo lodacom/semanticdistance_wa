@@ -75,20 +75,20 @@ javascripts %} {{ parent() }}
 			{% if concept_1 is defined %}
 			value="{{ concept_1 }}"
 			{% else %}
-			value="Entrer un concept, ex Melanoma"
+			value="{% trans %}entrer.un.concept.ex.Melanoma{% endtrans %}"
 			size="24pt"
 			{% endif %} /> <label for="ontology">Ontologies contenant les deux
 			concepts:</label> <input type="text" id="ontology" name="ontology"
 			{% if ontology is defined %}
 			value="{{ ontology }}"
 			{% else %}
-			value="Entrer un nom d'ontology, ex NCI Thesaurus"
+			value="{% trans %}entrer.un.nom.ontologie.ex.NCI.Thesaurus{% endtrans %}"
 			size="34pt"
 			{% endif %} /> <input type="text" id="concept_2" name="concept_2"
 			{% if concept_2 is defined %}
 			value="{{ concept_2 }}"
 			{% else %}
-			value="Entrer un concept, ex Melanoma"
+			value="{% trans %}entrer.un.concept.ex.Melanoma{% endtrans %}"
 			size="24pt"
 			{% endif %} />
 	</fieldset>

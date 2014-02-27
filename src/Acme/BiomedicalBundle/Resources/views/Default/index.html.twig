@@ -1,6 +1,6 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %}
 {% block doc %}
-				<li class="nav_text"><a href="api/doc/">Documentation API</a></li>
+				<li class="nav_text"><a href="api/doc/">{% trans %}documentation.api{% endtrans %}</a></li>
 {% endblock %}
 {% block javascripts %}
 	{{ parent() }}
@@ -53,16 +53,13 @@
   			$("#searchOntology").focusout(function(){
   				this.value = $("#searchOntology").val();
   			});
-  			$("#searchResources").focusout(function(){
-  				this.value = 'Entrer un concept, ex Melanoma';
-  			});
     	});
   		</script>
 {% endblock %}
 {% block content %}
 	{{ parent() }}
 <span style="font-size:1.5em">
-			<b>Bienvenue sur BioMedicalPortal!</b>
+			<b>{% trans %}bienvenue.sur.BioMedicalPortal{% endtrans %}!</b>
 		</span>
 		<div>
 			<table width="100%">
@@ -70,20 +67,20 @@
 					<form action="{{ path('acme_biomedical_search_term') }}" method="get">
 						<td valign="top" width="50%">
 							<fieldset>
-								<legend>Rechercher dans toutes les ontologies</legend>
+								<legend>{% trans %}rechercher.dans.toutes.les.ontologies{% endtrans %}</legend>
 								<input type="text" id="search" name="search"
-									value="Entrer un concept, ex Melanoma" size="24pt" /> <input
-									class="home_button" type="submit" value="Chercher">
+									value="{% trans %}entrer.un.concept.ex.Melanoma{% endtrans %}" size="24pt" /> <input
+									class="home_button" type="submit" value="{% trans %}chercher{% endtrans %}">
 							</fieldset>
 						</td>
 					</form>
 					<form action="{{ path('acme_biomedical_ontology') }}" method="get">
 						<td valign="top" width="50%">
 							<fieldset>
-								<legend>Rechercher une ontologie</legend>
+								<legend>{% trans %}rechercher.une.ontologie{% endtrans %}</legend>
 								<input type="text" id="searchOntology" name="searchOntology"
-									value="Entrer un nom d'ontology, ex NCI Thesaurus" size="34pt" /> <input
-									class="home_button" type="submit" value="Explorer">
+									value="{% trans %}entrer.un.nom.ontologie.ex.NCI.Thesaurus{% endtrans %}" size="34pt" /> <input
+									class="home_button" type="submit" value="{% trans %}explorer{% endtrans %}">
 							</fieldset>
 						</td>
 					</form>

@@ -25,19 +25,19 @@
 				<li class="nav_text"><a href="{{path('acme_biomedical_homepage')}}">BioMedicalPortal</a></li>
 				<li class="nav_text"><a href="#">{% trans %}distances.semantiques{% endtrans %}</a>
 					<ul>
-						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_two_concepts')}}">{% trans %}Entre deux concepts{% endtrans %}</a></li>
-						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_concept_dist')}}">Avec un concept et une distance</a></li>
+						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_two_concepts')}}">{% trans %}entre.deux.concepts{% endtrans %}</a></li>
+						<li class="nav_text_horiz"><a href="{{path('acme_biomedical_semantic_distance_concept_dist')}}">{% trans %}avec.un.concept.et.une.distance{% endtrans %}</a></li>
 					</ul>
 				</li>
 				{% block doc %}
-				<li class="nav_text"><a href="api/doc/">Documentation API</a></li>
+				<li class="nav_text"><a href="api/doc/">{% trans %}documentation.api{% endtrans %}</a></li>
 				{% endblock %}
 			</ul>
-			<a href="{{path('acme_biomedical_language',{'langue':'fr'})}}" > 
-			<img id="flag_1" alt="Drapeau français" src="{{ asset('bundles/acmebiomedical/images/drapeau-Francais.jpg') }}" title="Drapeau français" />
+			<a href="{{  path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'fr'}))}}" >
+			<img id="flag_1" alt="Drapeau français" src="{{ asset('bundles/acmebiomedical/images/drapeau-Francais.jpg') }}" title="{% trans %}drapeau.français{% endtrans %}" lang="fr" />
 			</a>
-			<a href="{{path('acme_biomedical_language',{'langue':'en'})}}">
-			<img id="flag_2" alt="Drapeau anglais" src="{{ asset('bundles/acmebiomedical/images/drapeau-Anglais.jpg') }}" title="Drapeau anglais" />
+			<a href="{{  path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': 'en'}))}}">
+			<img id="flag_2" alt="Drapeau anglais" src="{{ asset('bundles/acmebiomedical/images/drapeau-Anglais.jpg') }}" title="{% trans %}drapeau.anglais{% endtrans %}" lang="en" />
 			</a>
 		</div>
 		{% endblock %}

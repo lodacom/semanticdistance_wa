@@ -4,15 +4,12 @@ namespace Acme\BiomedicalBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Acme\BiomedicalBundle\Entity\Definition;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Translation\Writer\TranslationWriter;
-use Symfony\Component\Translation\Translator;
 
 class DefaultController extends Controller
 {
     public function indexAction(){
+    	$this->changeLanguage();
         return $this->render('AcmeBiomedicalBundle:Default:index.html.twig',array('title'=>'BioMedicalSemantic'));
     }
     
@@ -21,6 +18,34 @@ class DefaultController extends Controller
     	$result=$this->getDoctrine()->getRepository("AcmeBiomedicalBundle:Ontology")
     	->findOneBy(array('name'=>$ontology));
     	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','ontology'=>$result));
+    }
+    
+    public function changeLanguage(){
+    	$langue=null;
+    	if (!is_null($this->container)){
+    		$langue = $this->container->get('request')->get("_locale");
+    	}
+    	if (!is_null($langue)){
+    		//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
+    		$request = $this->getRequest();
+    		$request->setDefaultLocale($langue);
+    		$request->setLocale($langue);
+    		$session = new Session();
+    		$session->start();
+    		$session->set('_locale', $langue);
+    	}else{
+    		$session = new Session();
+    		$session->start();
+    		if (!is_null($session->get('_locale'))){
+    			$langue=$session->get('_locale');
+    		}
+    		if (!is_null($langue)){
+    			//si aucune action on regarde s'il y en a déjà une qui a été effectuée à travers la session
+    			$request = $this->getRequest();
+    			$request->setDefaultLocale($langue);
+    			$request->setLocale($langue);
+    		}
+    	}
     }
     
     public function goToTermAction(){
@@ -34,23 +59,6 @@ class DefaultController extends Controller
     	}else{
     		return $this->render('AcmeBiomedicalBundle:Default:term.html.twig',array('title'=>'Term','term'=>$term_result,'definition'=>$definition->getDefinition()));
     	}
-    }
-    
-    public function changeLanguageAction($langue=null){
-    	$request = $this->getRequest();
-    	if($langue != null){
-    		//\Doctrine\Common\Util\Debug::dump($langue);
-    		$request->setLocale($langue);
-    		//$request->setDefaultLocale($langue);
-    		//$request->getSession()->set('_locale', $langue);
-    	}
-    	$this->get('translator')->setLocale($langue);
-    	// on tente de rediriger vers la page d'origine
-    	$url = $this->container->get('request')->headers->get('referer');
-    	if(empty($url)) {
-    		$url = $this->container->get('router')->generate('acme_biomedical_homepage');
-    	}
-    	return $this->render('AcmeBiomedicalBundle:Default:index.html.twig',array('title'=>'BioMedicalSemantic'));
     }
     
     /**
