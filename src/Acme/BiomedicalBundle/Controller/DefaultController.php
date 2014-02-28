@@ -22,9 +22,11 @@ class DefaultController extends Controller
     
     public function changeLanguage(){
     	$langue=null;
+    	$tab_langue=array("fr","en");
     	if (!is_null($this->container)){
     		$langue = $this->container->get('request')->get("_locale");
     	}
+    	//in_array($langue, $tab_langue);
     	if (!is_null($langue)){
     		//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
     		$request = $this->getRequest();

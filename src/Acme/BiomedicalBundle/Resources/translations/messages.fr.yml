@@ -31,3 +31,16 @@ note: Note
 noeuds.cliquables.redirigent: Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPortal
 desole.graphe.pas.genere: Désolé mais le graphe n'a pas pas pu être généré l'un des deux termes ne possèdent pas de path to root
 #######################################################################################################
+trouver.tous.les.concepts:  Trouver tous les concepts
+ontologies.contenant.le.concept: Ontologies contenant le concept
+distance.maximale:  Distance maximale
+concepts.trouvant.distance: Concepts se trouvant à une distance de
+pour.la.distance: pour la distance
+du.concept: du concept
+lien.vers.BioPortal:  Lien vers BioPortal
+pas.concepts.distance:  Il n'y a pas de concepts pour cette distance et pour ce type de distance
+voir.graphe.genere: Voir le graphe généré
+voir.resultats: Voir les résultats
+couleur.ancetres.communs: Couleur des ancêtres communs
+#######################################################################################################
+distance.entre.deux.concepts: Distance entre deux concepts

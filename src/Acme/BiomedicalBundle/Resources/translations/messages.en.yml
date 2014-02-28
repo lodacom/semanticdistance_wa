@@ -30,4 +30,16 @@ couleur.des.feuilles: Leafs color
 note: Note
 noeuds.cliquables.redirigent: Nodes are clickable and redirect to the corresponding term in BioPortal  
 desole.graphe.pas.genere: Sorry but the graph has not been generated not one of the two terms do not have path to root 
+trouver.tous.les.concepts:  Find all concepts
+ontologies.contenant.le.concept:  Ontologies containing the concept
+distance.maximale:  Maximal distance
+concepts.trouvant.distance: Concepts which is at a distance of
+pour.la.distance: for distance
+du.concept: of concept
+lien.vers.BioPortal:  Link to BioPortal
+pas.concepts.distance:  There are no concepts for this distance and this type of distance
+voir.graphe.genere: See generated graph
+voir.resultats: See results
+couleur.ancetres.communs: Common ancestor color
 #######################################################################################################
+distance.entre.deux.concepts: Distance between two concepts

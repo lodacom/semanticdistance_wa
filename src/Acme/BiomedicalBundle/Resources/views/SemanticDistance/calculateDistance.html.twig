@@ -1,6 +1,6 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %}
 {% block  title %}
-Distance entre deux concepts
+{% trans %}distance.entre.deux.concepts{% endtrans %}
 {% endblock %}
 {% block content %}
 {{ parent() }}
@@ -8,21 +8,21 @@ Distance entre deux concepts
 <!-- Cas où l'include=all a été inséré par le requêteur -->
 <p>
 <span id="concepts">
-Distances entre 
+{% trans %}distances.entre{% endtrans %}
 <a href="{{ distances.getConcept1().getFullId() }}">
 {{ distances.getTerm1().getName() }} 
 </a>
 <a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ distances.getOntology().getVirtualOntologyId() }}
 			&full_id={{ distances.getEncodedFullIdConcept1() }}">
-<button class="home_button">Lien vers BioPortal</button>
+<button class="home_button">{% trans %}lien.vers.BioPortal{% endtrans %}</button>
 </a>
-et 
+{% trans %}et{% endtrans %} 
 <a href="{{ distances.getConcept2().getFullId() }}">
 {{ distances.getTerm2().getName() }}
 </a>
 <a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ distances.getOntology().getVirtualOntologyId() }}
 			&full_id={{ distances.getEncodedFullIdConcept2() }}">
-<button class="home_button">Lien vers BioPortal</button>
+<button class="home_button">{% trans %}lien.vers.BioPortal{% endtrans %}</button>
 </a>
 </span>
 </p>
@@ -30,11 +30,11 @@ et
 <!-- Cas où l'include=concept a été inséré par le requêteur -->
 <p>
 <span id="concepts">
-Distances entre 
+{% trans %}distances.entre{% endtrans %}
 <a href="{{ distances.getConcept1().getFullId() }}">
 {{ distances.getTerm1().getName() }} 
 </a>
-et 
+{% trans %}et{% endtrans %} 
 <a href="{{ distances.getConcept2().getFullId() }}">
 {{ distances.getTerm2().getName() }}
 </a>
@@ -44,12 +44,18 @@ et
 <!-- Cas par défaut l'include n'a pas été inséré par le requêteur -->
 <p>
 <span id="concepts">
-Distances entre {{ distances.getTerm1().getName() }} et {{ distances.getTerm2().getName() }}
+{% trans %}distances.entre{% endtrans %} {{ distances.getTerm1().getName() }} {% trans %}et{% endtrans %} {{ distances.getTerm2().getName() }}
 </span>
 </p>
 {% endif %}
-Distance de Lin: {{ distances.getSemanticDistance().getSimLin() }}<br>
-Distance de Wu Palmer: {{ distances.getSemanticDistance().getSimWuPalmer() }}<br>
-Distance de Resnik: {{ distances.getSemanticDistance().getSimResnik() }}<br>
-Distance de Schlicker: {{ distances.getSemanticDistance().getSimSchlicker() }}<br>
+{% trans %}distance.de.Lin{% endtrans %}: {{ distances.getSemanticDistance().getSimLin() }}
+	<br>
+	{% trans %}distance.de.Wu.Palmer{% endtrans %}: {{
+	distances.getSemanticDistance().getSimWuPalmer() }}
+	<br>
+	{% trans %}distance.de.Resnik{% endtrans %}: {{ distances.getSemanticDistance().getSimResnik() }}
+	<br>
+	{% trans %}distance.de.Schlicker{% endtrans %}: {{
+	distances.getSemanticDistance().getSimSchlicker() }}
+	<br>
 {% endblock %}

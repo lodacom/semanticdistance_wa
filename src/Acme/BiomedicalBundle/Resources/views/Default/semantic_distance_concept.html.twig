@@ -7,7 +7,11 @@ $(function() {
       range: "max",
       min: 0,
       max: 100,
+      {% if distance_max is defined %}
+    value: {{ distance_max }},
+      {% else %}
       value: 50,
+      {% endif %}
       slide: function( event, ui ) {
         $( "#distance_max" ).val( ui.value );
       }
@@ -79,40 +83,40 @@ $(function() {
 {{ parent() }}
 <form action="{{ path('acme_biomedical_all_concepts_in_distance') }}" method="post">
 	<fieldset>
-		<legend>Trouver tous les concepts</legend>
+		<legend>{% trans %}trouver.tous.les.concepts{% endtrans %}</legend>
 		<input type="text" id="concept_1" name="concept_1"
 			{% if concept_1 is defined %}
 			value="{{ concept_1 }}" 
 			{% else %}
-			value="Entrer un concept, ex Melanoma" 
+			value="{% trans %}entrer.un.concept.ex.Melanoma{% endtrans %}" 
 			size="24pt"
 			{% endif %} /> 
-			<label for="ontology">Ontologies contenant le
-			concept:</label> <input type="text" id="ontology" name="ontology"
+			<label for="ontology">{% trans %}ontologies.contenant.le.concept{% endtrans %}:</label> 
+			<input type="text" id="ontology" name="ontology"
 			{% if ontology is defined %}
 			value="{{ ontology }}"
 			{% else %}
-			value="Entrer un nom d'ontology, ex NCI Thesaurus"
+			value="{% trans %}entrer.un.nom.ontologie.ex.NCI.Thesaurus{% endtrans %}"
 			size="34pt"
 			{% endif %} />
-		<label for="dist_id">Distance sémantique:</label>	
+		<label for="dist_id">{% trans %}distances.semantiques{% endtrans %}:</label>	
 		<select name="dist_id" id="dist_id">
 			<option value="1:sim_lin">Lin</option>
 			<option value="2:sim_wu_palmer">Wu/Palmer</option>
 			<option value="3:sim_resnik">Resnik</option>
 			<option value="4:sim_schlicker">Schlicker</option>
 		</select>
-		<label for="distance_max">Distance maximale:</label>
+		<label for="distance_max">{% trans %}distance.maximale{% endtrans %}:</label>
 		<input type="number" id="distance_max" name="distance_max" style="border:0; color:#f6931f; font-weight:bold;"/>
 		<div id="slider-range-max" style="width:300px;float: right;margin-right: 10%"></div>
 		<br>
-		<input class="home_button" type="submit" value="Chercher"/>	
+		<input class="home_button" type="submit" value="{% trans %}chercher{% endtrans %}"/>	
 	</fieldset>
 </form>
 {% if distances is defined %}
 	{% if distances is not null %}
-			<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
-pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getName() }}</h4>
+			<h4>{% trans %}concepts.trouvant.distance{% endtrans %} {{ distances.distance_max }} 
+{% trans %}pour.la.distance{% endtrans %} {{ distances.dist_id }} {% trans %}du.concept{% endtrans %} {{ distances.concept_1.getName() }}</h4>
 		<div id="list_of_concepts">
 		{% for term_concepts in distances.semantic_distances %}
 			<p>
@@ -121,13 +125,13 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
 			</a>
 			<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ term_concepts.getOntology().getVirtualOntologyId() }}
 			&full_id={{ term_concepts.getFullId() }}">
-			<button class="home_button">Lien vers BioPortal</button>
+			<button class="home_button">{% trans %}lien.vers.BioPortal{% endtrans %}</button>
 			</a>
 			</p>
 		{% endfor %}
 		</div>
 	{% else %}
-		Il n'y a pas de concepts pour cette distance et pour ce type de distance.
+		{% trans %}pas.concepts.distance{% endtrans %}.
 	{% endif %}
 {% endif %}
 {% if graph is defined and graph is not null %}
@@ -475,16 +479,16 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
  })
  })(this.jQuery)
 </script>
-<button id="change" class="home_button">Voir le graphe généré</button> 	
-<button id="change_again" class="home_button">Voir les résultats</button> 				
+<button id="change" class="home_button">{% trans %}voir.graphe.genere{% endtrans %}</button> 	
+<button id="change_again" class="home_button">{% trans %}voir.resultats{% endtrans %}</button> 				
 <div id="graph">
 <div id="color_code">
-<span id="color_legend">Légendes:</span><br>
-<span id="root_color">Couleur des ancêtres communs</span><br>
-<span id="children_color">Couleur des fils</span><br>
-<span id="leaf_color">Couleur des feuilles</span><br>
-<span id="color_legend">Note:</span><br>
-Les noeuds sont cliquables et redirigent vers le terme correspondant dans BioPortal.<br>
+<span id="color_legend">{% trans %}legendes{% endtrans %}:</span><br>
+<span id="root_color">{% trans %}couleur.ancetres.communs{% endtrans %}</span><br>
+<span id="children_color">{% trans %}couleur.des.fils{% endtrans %}</span><br>
+<span id="leaf_color">{% trans %}couleur.des.feuilles{% endtrans %}</span><br>
+<span id="color_legend">{% trans %}note{% endtrans %}:</span><br>
+{% trans %}noeuds.cliquables.redirigent{% endtrans %}.<br>
 </div> 				
 <span id="canvas_title">Concepts around concepts</span> 	 		 	
 <div id="nav">

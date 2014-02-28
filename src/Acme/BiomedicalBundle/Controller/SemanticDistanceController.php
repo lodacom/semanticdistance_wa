@@ -40,26 +40,38 @@ class SemanticDistanceController extends FOSRestController{
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',array('title'=>'Distance sémantique'));
 	}
 	
-	public function changeLanguage(){
-		$langue=null;
-		if (!is_null($this->container)){
-			$langue = $this->container->get('request')->get("_locale");
-		}
-		if (!is_null($langue)){
-			//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
+	/**
+	 * Méthode permettant à l'utilisateur et le developpeur de changer de langue
+	 * @param string $langue Permet de passer la langue en param (utilisation avec API)
+	 * @param boolean $api_ask Permet de savoir si l'appel vient de l'API ou non
+	 */
+	public function changeLanguage($langue=null,$api_ask=false){
+		$tab_langue=array("fr","en");
+		if (in_array($langue, $tab_langue)&&$api_ask){
 			$request = $this->getRequest();
 			$request->setDefaultLocale($langue);
 			$request->setLocale($langue);
+			return;
+		}
+		$container_langue=null;
+		if (!is_null($this->container)){
+			$container_langue = $this->container->get('request')->get("_locale");
+		}
+		if (!is_null($container_langue) && in_array($container_langue, $tab_langue)){
+			//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
+			$request = $this->getRequest();
+			$request->setDefaultLocale($container_langue);
+			$request->setLocale($container_langue);
 			$session = new Session();
 			$session->start();
-			$session->set('_locale', $langue);
+			$session->set('_locale', $container_langue);
 		}else{
 			$session = new Session();
 			$session->start();
 			if (!is_null($session->get('_locale'))){
 				$langue=$session->get('_locale');
 			}
-			if (!is_null($langue)){
+			if (!is_null($langue) && in_array($langue, $tab_langue)){
 				//si aucune action on regarde s'il y en a déjà une qui a été effectuée à travers la session
 				$request = $this->getRequest();
 				$request->setDefaultLocale($langue);
@@ -147,7 +159,8 @@ class SemanticDistanceController extends FOSRestController{
 				array('title'=>'Distance sémantique',
 				'distances'=>$results,
 				'ontology'=>$ontology,	
-				'concept_1'=>$concept_1,			
+				'concept_1'=>$concept_1,
+				'distance_max'=>$distance_max,					
 				'graph'=>$constructGraph));
 	}
 	
@@ -232,6 +245,7 @@ class SemanticDistanceController extends FOSRestController{
 	 * If dist_id=1 -> sim_lin, 2=sim_wu_palmer, 3=sim_resnik, 4=sim_schlicker.Optional")
 	 * @Annotations\QueryParam(name="include", requirements="(concept|all)", nullable=true, description="If you want to retreive the full_id of the concept
 	 * put concept. If you want the full_id and the ontology of concept put all.Optional")
+	 * @Annotations\QueryParam(name="lang", requirements="(fr|en)", nullable=true, description="If you want an english return put en, by default it is a french return (fr).Optional") 
 	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
@@ -245,7 +259,11 @@ class SemanticDistanceController extends FOSRestController{
 		$concept_2=$paramFetcher->get('concept_2');
 		$dist_id=$paramFetcher->get('dist_id');
 		$include=$paramFetcher->get('include');
+		$lang=$paramFetcher->get('lang');
 		
+		if (!is_null($lang)){
+			$this->changeLanguage($lang,true);
+		}
 		$distances=$this->singleDistanceParam($concept_1, $concept_2, $dist_id, $include);
 		if ($distances==null){
 			throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec
