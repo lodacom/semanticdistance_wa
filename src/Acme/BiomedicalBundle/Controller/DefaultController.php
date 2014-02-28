@@ -26,8 +26,7 @@ class DefaultController extends Controller
     	if (!is_null($this->container)){
     		$langue = $this->container->get('request')->get("_locale");
     	}
-    	//in_array($langue, $tab_langue);
-    	if (!is_null($langue)){
+    	if (!is_null($langue)&&in_array($langue, $tab_langue)){
     		//on prend en compte en priorité l'action de l'utilisateur (changement de langue)
     		$request = $this->getRequest();
     		$request->setDefaultLocale($langue);
@@ -41,7 +40,7 @@ class DefaultController extends Controller
     		if (!is_null($session->get('_locale'))){
     			$langue=$session->get('_locale');
     		}
-    		if (!is_null($langue)){
+    		if (!is_null($langue)&&in_array($langue, $tab_langue)){
     			//si aucune action on regarde s'il y en a déjà une qui a été effectuée à travers la session
     			$request = $this->getRequest();
     			$request->setDefaultLocale($langue);
