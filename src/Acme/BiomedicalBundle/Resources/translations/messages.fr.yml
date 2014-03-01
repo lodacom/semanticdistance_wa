@@ -44,3 +44,11 @@ voir.resultats: Voir les résultats
 couleur.ancetres.communs: Couleur des ancêtres communs
 #######################################################################################################
 distance.entre.deux.concepts: Distance entre deux concepts
+#######################################################################################################
+calcul.distance.pas.possible: Nous sommes désolé le calcul de distance n'est pas possible avec le concept
+et.concept: et le concept
+filtres.concept_1.concept_2.obligatoires: Les filtres concept_1 et concept_2 sont obligatoires
+champ.type.url.concept_1.concept_2: Vous devez mettre un champ de type url pour le concept_1 et le concept_2
+filtres.dist_id.distance_max.obligatoires:  Les filtres dist_id et distance_max sont obligatoires
+champ.type.url.concept_1: Vous devez mettre un champ de type url pour le concept_1
+rentrer.URI.passer.URI: Vous devez rentrer la chaîne de caractère URI pour pouvoir passer une URI

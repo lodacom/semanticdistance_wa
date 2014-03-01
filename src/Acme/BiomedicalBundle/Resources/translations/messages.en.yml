@@ -43,3 +43,10 @@ voir.resultats: See results
 couleur.ancetres.communs: Common ancestor color
 #######################################################################################################
 distance.entre.deux.concepts: Distance between two concepts
+#######################################################################################################
+calcul.distance.pas.possible: We are sorry the distance calculation is not possible with the concept
+et.concept: and the concept
+filtres.concept_1.concept_2.obligatoires: Filters concept_1 and concept_2 are mandatory
+champ.type.url.concept_1.concept_2: You need an url field-type for concept_1 and concept_2
+filtres.dist_id.distance_max.obligatoires:  Filters dist_id and distance_max are mandatory
+rentrer.URI.passer.URI: You have to enter the string "URI" in order to pass an URI

@@ -266,8 +266,9 @@ class SemanticDistanceController extends FOSRestController{
 		}
 		$distances=$this->singleDistanceParam($concept_1, $concept_2, $dist_id, $include);
 		if ($distances==null){
-			throw new HttpException(404,"Nous sommes désolé le calcul de distance n'est pas possible avec
-					le concept: ".$concept_1." et le concept: ".$concept_2);
+			$partie_1=$this->get('translator')->trans("calcul.distance.pas.possible");
+			$partie_2=$this->get('translator')->trans("et.concept");
+			throw new HttpException(404,$partie_1.": ".$concept_1." ".$partie_2.": ".$concept_2);
 		}
 		return $distances;
 	}
@@ -318,7 +319,8 @@ class SemanticDistanceController extends FOSRestController{
 	 */
 	private function singleDistanceParam($concept_1,$concept_2,$dist_id=null,$include=null){
 		if (empty($concept_1)||empty($concept_2)){
-			throw new HttpException(403,"Les filtres concept_1 et concept_2 sont obligatoires!");
+			$filtre=$this->get('translator')->trans("filtres.concept_1.concept_2.obligatoires");
+			throw new HttpException(403,$filtre."!");
 		}
 		if ((preg_match("[\d+]", $concept_1)&&preg_match("[\d+]", $concept_2))||(is_int($concept_1)&&is_int($concept_2))){
 			if (!is_null($dist_id)){
@@ -350,8 +352,8 @@ class SemanticDistanceController extends FOSRestController{
 			}
 		}else{
 			if (!preg_match("(http.+)", $concept_1)&&!preg_match("(http.+)", $concept_2)){
-				throw new HttpException(403,"Vous devez mettre un champ de type url pour le
-						concept_1 et le concept_2!");
+				$url=$this->get('translator')->trans("champ.type.url.concept_1.concept_2");
+				throw new HttpException(403,$url."!");
 				//go to the hell
 			}
 			$concept_1_id=$this->retreiveConceptId(urldecode($concept_1));
@@ -451,6 +453,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+)", description="The maximum distance to search between 0 to 100.Mandatory")
 	 * @Annotations\QueryParam(name="concept_1", requirements="(http.+)", nullable=true, description="URI of concept.Should be 
 	 * mandatory if you want to search by URI.Optional")
+	 * @Annotations\QueryParam(name="lang", requirements="(fr|en)", nullable=true, description="If you want an english return put en, by default it is a french return (fr).Optional")
 	 * 
 	 * @Annotations\View(templateVar="distances")
 	 *
@@ -461,8 +464,14 @@ class SemanticDistanceController extends FOSRestController{
 	public function getDistanceAction($concept, ParamFetcherInterface $paramFetcher){
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
+		$lang=$paramFetcher->get('lang');
+		if (!is_null($lang)){
+			$this->changeLanguage($lang,true);
+		}
+		
 		if (empty($dist_id)||empty($distance_max)||empty($concept)){
-			throw new HttpException(403,"Les filtres dist_id et distance_max sont obligatoires!");
+			$filtres=$this->get('translator')->trans("filtres.dist_id.distance_max.obligatoires");
+			throw new HttpException(403,$filtres."!");
 		}
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
 			$results=$this->multiDistances($dist_id, $distance_max, $concept);
@@ -476,8 +485,8 @@ class SemanticDistanceController extends FOSRestController{
 			if (preg_match("(URI)", $concept)){
 				$concept_recup=$paramFetcher->get('concept_1');
 				if (!preg_match("(http.+)", $concept_recup)){
-					throw new HttpException(403,"Vous devez mettre un champ de type url pour le
-						concept_1!");
+					$url=$this->get('translator')->trans("champ.type.url.concept_1");
+					throw new HttpException(403,$url."!");
 					//go to the hell
 				}
 				$concept_1=urldecode($concept_recup);
@@ -490,7 +499,8 @@ class SemanticDistanceController extends FOSRestController{
 				}
 				return $results;
 			}else{
-				throw new HttpException(403,"Vous devez rentrer la chaîne de caractère URI pour pouvoir passer une URI!");
+				$uri=$this->get('translator')->trans("rentrer.URI.passer.URI");
+				throw new HttpException(403,$uri."!");
 			}
 		}
 	}

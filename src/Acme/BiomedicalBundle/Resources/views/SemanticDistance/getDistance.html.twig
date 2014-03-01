@@ -1,12 +1,12 @@
 {% extends 'AcmeBiomedicalBundle::main.html.twig' %}
 {% block  title %}
-Concepts se trouvant à une distance de {{ distances.distance_max }} 
-pour la distance {{ distances.dist_id }} 
+{% trans %}concepts.trouvant.distance{% endtrans %} {{ distances.distance_max }} 
+{% trans %}pour.la.distance{% endtrans %} {{ distances.dist_id }} 
 {% endblock %}
 {% block content %}
 {{ parent() }}
-	<h4>Concepts se trouvant à une distance de {{ distances.distance_max }} 
-pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getName() }}</h4>
+	<h4>{% trans %}concepts.trouvant.distance{% endtrans %} {{ distances.distance_max }} 
+{% trans %}pour.la.distance{% endtrans %} {{ distances.dist_id }} {% trans %}du.concept{% endtrans %} {{ distances.concept_1.getName() }}</h4>
 	{% for term_concepts in distances.semantic_distances %}
 			<p>
 			<a href="{{  term_concepts.getConcept().getFullId() }}">
@@ -14,7 +14,7 @@ pour la distance {{ distances.dist_id }} du concept {{ distances.concept_1.getNa
 			</a>
 			<a href="{{  path('acme_biomedical_link_to_bioportal') }}?ontology_acronym={{ term_concepts.getOntology().getVirtualOntologyId() }}
 			&full_id={{ term_concepts.getFullId() }}">
-			<button class="home_button">Lien vers BioPortal</button>
+			<button class="home_button">{% trans %}lien.vers.BioPortal{% endtrans %}</button>
 			</a>
 			</p>
 	{% endfor %}
