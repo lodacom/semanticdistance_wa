@@ -501,7 +501,7 @@ class SemanticDistanceController extends FOSRestController{
 		if (!is_null($lang)){
 			$this->changeLanguage($lang,true);
 		}
-		if (is_null($page_number)||($page_number<=$this->countMultiDistances($dist_id, $distance_max, $concept))){
+		if (is_null($page_number)||($page_number>$this->countMultiDistances($dist_id, $distance_max, $concept))){
 			$page_number=1;
 		}
 		
