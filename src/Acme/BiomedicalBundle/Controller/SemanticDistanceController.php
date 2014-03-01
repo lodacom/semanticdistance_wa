@@ -25,7 +25,6 @@ use Acme\BiomedicalBundle\Entity\Ontology;
 use Acme\BiomedicalBundle\Model\ConstructGraph;
 use Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class SemanticDistanceController extends FOSRestController{
 	
