@@ -117,6 +117,10 @@ $(function() {
 	{% if distances is not null %}
 			<h4>{% trans %}concepts.trouvant.distance{% endtrans %} {{ distances.distance_max }} 
 {% trans %}pour.la.distance{% endtrans %} {{ distances.dist_id }} {% trans %}du.concept{% endtrans %} {{ distances.concept_1.getName() }}</h4>
+		{% if graph is defined and graph is not null %}
+		<button id="change" class="home_button">{% trans %}voir.graphe.genere{% endtrans %}</button> 	
+		<button id="change_again" class="home_button">{% trans %}voir.resultats{% endtrans %}</button> 	
+		{% endif %}
 		<div id="list_of_concepts">
 		{% for term_concepts in distances.semantic_distances %}
 			<p>
@@ -129,6 +133,7 @@ $(function() {
 			</a>
 			</p>
 		{% endfor %}
+		{% include 'AcmeBiomedicalBundle:Default:pagination.html.twig' %}
 		</div>
 	{% else %}
 		{% trans %}pas.concepts.distance{% endtrans %}.
@@ -478,9 +483,7 @@ $(function() {
  nav.init()
  })
  })(this.jQuery)
-</script>
-<button id="change" class="home_button">{% trans %}voir.graphe.genere{% endtrans %}</button> 	
-<button id="change_again" class="home_button">{% trans %}voir.resultats{% endtrans %}</button> 				
+</script>			
 <div id="graph">
 <div id="color_code">
 <span id="color_legend">{% trans %}legendes{% endtrans %}:</span><br>

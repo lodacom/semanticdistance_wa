@@ -25,10 +25,12 @@ use Acme\BiomedicalBundle\Entity\Ontology;
 use Acme\BiomedicalBundle\Model\ConstructGraph;
 use Acme\BiomedicalBundle\Model\SemanticDistanceTwoConcepts;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class SemanticDistanceController extends FOSRestController{
 	
 	const SESSION_CONTEXT_DISTANCE = 'distance';
+	const MAX_CONCEPTS = 50;
 	
 	public function indexAction(){
 		$this->changeLanguage();
@@ -137,15 +139,35 @@ class SemanticDistanceController extends FOSRestController{
 	 * Permet de faire l'affichage pour l'interface web pour le service 2
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
-	public function searchConceptsInDistanceAction(){
+	public function searchConceptsInDistanceAction($page){
 		$this->changeLanguage();
-		$concept_1=$_POST['concept_1'];
-		$dist_id=$_POST['dist_id'];
-		$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur
-		$ontology=$_POST['ontology'];
+		$concept_1=null;
+		if (isset($_POST['concept_1'])){
+			$concept_1=$_POST['concept_1'];
+			$dist_id=$_POST['dist_id'];
+			$distance_max=$_POST['distance_max'];//distance choisi par l'utilisateur
+			$ontology=$_POST['ontology'];
+		}
+		
+		$session = new Session();
+		//$session->start();
+		if (!is_null($session->get('concept_1'))&&is_null($concept_1)){
+			$concept_1=$session->get('concept_1');//l'utilisateur consulte les autres pages
+			$dist_id=$session->get('dist_id');
+			$distance_max=$session->get('distance_max');
+			$ontology=$session->get('ontology');
+		}else{
+			$session->set('concept_1', $concept_1);//l'utilisateur n'a pas encore fait de recherche
+			$session->set('dist_id', $dist_id);
+			$session->set('distance_max', $distance_max);
+			$session->set('ontology', $ontology);
+		}
+		
 		$recup=$this->getSemSimId($concept_1, $ontology);
 		//produit en croix effectué dans la méthode multiDistances
-		$results=$this->multiDistances($dist_id, $distance_max, $recup);
+		$results=$this->multiDistances($dist_id, $distance_max, $recup, $page);
+		$concepts_count=$this->countMultiDistances($dist_id, $distance_max, $recup);
+		//\Doctrine\Common\Util\Debug::dump($concepts_count);
 		if (empty($results->semantic_distances)){
 			$results=null;
 			$constructGraph=null;
@@ -155,9 +177,17 @@ class SemanticDistanceController extends FOSRestController{
 			$constructGraph->getAllNodesAroundConcept($results->semantic_distances);
 		}
 		
+		$pagination = array(
+				'page' => $page,
+				'route' => 'acme_biomedical_all_concepts_in_distance',
+				'pages_count' => ceil($concepts_count/self::MAX_CONCEPTS),
+				'route_params' => array()
+		);
+		
 		return $this->render('AcmeBiomedicalBundle:Default:semantic_distance_concept.html.twig',
 				array('title'=>'Distance sémantique',
 				'distances'=>$results,
+				'pagination'=>$pagination,		
 				'ontology'=>$ontology,	
 				'concept_1'=>$concept_1,
 				'distance_max'=>$distance_max,					
@@ -453,6 +483,7 @@ class SemanticDistanceController extends FOSRestController{
 	 *	@Annotations\QueryParam(name="distance_max", requirements="(\d+)", description="The maximum distance to search between 0 to 100.Mandatory")
 	 * @Annotations\QueryParam(name="concept_1", requirements="(http.+)", nullable=true, description="URI of concept.Should be 
 	 * mandatory if you want to search by URI.Optional")
+	 * @Annotations\QueryParam(name="page_number", requirements="(\d+)", nullable=true, description="You can run through other results by changing the page number(By default the page number is 1. Each page contains 50 results).Optional")
 	 * @Annotations\QueryParam(name="lang", requirements="(fr|en)", nullable=true, description="If you want an english return put en, by default it is a french return (fr).Optional")
 	 * 
 	 * @Annotations\View(templateVar="distances")
@@ -465,8 +496,13 @@ class SemanticDistanceController extends FOSRestController{
 		$dist_id=$paramFetcher->get('dist_id');
 		$distance_max=$paramFetcher->get('distance_max');
 		$lang=$paramFetcher->get('lang');
+		$page_number=$paramFetcher->get('page_number');
+		
 		if (!is_null($lang)){
 			$this->changeLanguage($lang,true);
+		}
+		if (is_null($page_number)||($page_number<=$this->countMultiDistances($dist_id, $distance_max, $concept))){
+			$page_number=1;
 		}
 		
 		if (empty($dist_id)||empty($distance_max)||empty($concept)){
@@ -474,10 +510,11 @@ class SemanticDistanceController extends FOSRestController{
 			throw new HttpException(403,$filtres."!");
 		}
 		if (is_int($concept)||preg_match("[\d+]", $concept)){
-			$results=$this->multiDistances($dist_id, $distance_max, $concept);
+			$results=$this->multiDistances($dist_id, $distance_max, $concept,$page_number);
 			if (empty($results->semantic_distances)) {
-				throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
-						et l'identifiant de distance: ".$dist_id);
+				$partie_1=$this->get('translator')->trans("pas.concepts.pour.distance");
+				$partie_2=$this->get('translator')->trans("identifiant.distance");
+				throw new HttpException(404,$partie_1.": ".$distance_max." ".$partie_2.": ".$dist_id);
 			}
 			
 			return $results;
@@ -492,10 +529,11 @@ class SemanticDistanceController extends FOSRestController{
 				$concept_1=urldecode($concept_recup);
 				$concept_id=$this->retreiveConceptId($concept_1);
 			
-				$results=$this->multiDistances($dist_id, $distance_max, $concept_id);
+				$results=$this->multiDistances($dist_id, $distance_max, $concept_id,$page_number);
 				if (empty($results->semantic_distances)) {
-					throw new HttpException(404,"Il n'y a pas de concepts pour la distance: ".$distance_max."
-						et l'identifiant de distance: ".$dist_id);
+					$partie_1=$this->get('translator')->trans("pas.concepts.pour.distance");
+					$partie_2=$this->get('translator')->trans("identifiant.distance");
+					throw new HttpException(404,$partie_1.": ".$distance_max." ".$partie_2.": ".$dist_id);
 				}
 				return $results;
 			}else{
@@ -509,9 +547,50 @@ class SemanticDistanceController extends FOSRestController{
 	 * @param integer $dist_id le type de la distance
 	 * @param integer $distance_max la distance maximale choisie par l'utilisateur
 	 * @param integer $concept l'identifiant du concept
+	 * @return integer number of results returned by query
+	 */
+	private function countMultiDistances($dist_id,$distance_max,$concept){
+		$tab=split(":", $dist_id);
+		if (!preg_match("[\d+]", $dist_id)&&!preg_match("[\d+]", $distance_max)){
+			throw new HttpException(403,"Vous devez mettre un champ de type entier pour le champ
+						dist_id et distance_max!");
+			//go to the hell
+		}
+		switch ($tab[0]){
+			case 1:$dist_id="sim_lin";
+			break;
+			case 2:$dist_id="sim_wu_palmer";
+			break;
+			case 3:$dist_id="sim_resnik";
+			break;
+			case 4:$dist_id="sim_schlicker";
+			break;
+		}
+	
+		$distance_max=($distance_max*$this->getMaxDistance($dist_id))/100;
+		//produit en croix en fonction du type de distance choisi par l'utilisateur
+	
+		$em=$this->getDoctrine()->getEntityManager();
+		$query=$em->createQueryBuilder()
+		->select("sd.".$dist_id.", sd.concept_1, sd.concept_2")
+		->from("AcmeBiomedicalBundle:SemanticDistance", "sd")
+		->where("sd.".$dist_id.">= :distance")
+		->andWhere("sd.concept_1 = :id")
+		->setParameters(array("distance"=>$distance_max,"id"=>$concept))
+		->orderBy("sd.".$dist_id,"DESC")
+		->distinct(true)
+		->getQuery();
+		$recup = $query->getArrayResult();
+		return count($recup);
+	}
+	
+	/**
+	 * @param integer $dist_id le type de la distance
+	 * @param integer $distance_max la distance maximale choisie par l'utilisateur
+	 * @param integer $concept l'identifiant du concept
 	 * @return SemanticDistanceCollection
 	 */
-	private function multiDistances($dist_id,$distance_max,$concept){
+	private function multiDistances($dist_id,$distance_max,$concept,$page=1){
 		$tab=split(":", $dist_id);
 		if (!preg_match("[\d+]", $dist_id)&&!preg_match("[\d+]", $distance_max)){
 			throw new HttpException(403,"Vous devez mettre un champ de type entier pour le champ
@@ -541,8 +620,9 @@ class SemanticDistanceController extends FOSRestController{
 		->setParameters(array("distance"=>$distance_max,"id"=>$concept))
 		->orderBy("sd.".$dist_id,"DESC")
 		->distinct(true)
+		->setFirstResult(($page-1)*self::MAX_CONCEPTS)
+		->setMaxResults(self::MAX_CONCEPTS)
 		->getQuery();
-
 		$recup = $query->getArrayResult();
 		$dist_array=new SemanticDistanceCollection($dist_id,$distance_max);
 		foreach ( $recup as $data ) {

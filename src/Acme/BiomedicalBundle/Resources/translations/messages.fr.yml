@@ -52,3 +52,5 @@ champ.type.url.concept_1.concept_2: Vous devez mettre un champ de type url pour 
 filtres.dist_id.distance_max.obligatoires:  Les filtres dist_id et distance_max sont obligatoires
 champ.type.url.concept_1: Vous devez mettre un champ de type url pour le concept_1
 rentrer.URI.passer.URI: Vous devez rentrer la chaîne de caractère URI pour pouvoir passer une URI
+pas.concepts.pour.distance: Il n'y a pas de concepts pour la distance
+identifiant.distance: et l'identifiant de distance

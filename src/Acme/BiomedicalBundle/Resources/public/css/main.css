@@ -135,6 +135,8 @@ ul li{
 #list_of_concepts{
 	position: relative;
 	float: left;
+	width: 100%;
+	margin-top:-3%;
 }
 
 #graph{
@@ -143,4 +145,23 @@ ul li{
 
 #change_again{
 	display: none;
+}
+
+#change{
+	position:relative;
+	margin-left: 25%;	
+}
+
+/*PAGINATION*/
+#pagination{
+	text-align: center;
+}
+
+.page{
+	height: 37px;
+	border-radius:10px;
+	border-style:outset;
+	border-color:black;
+	color:white;
+	background-color:#234979;
 }

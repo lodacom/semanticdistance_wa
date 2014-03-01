@@ -50,3 +50,5 @@ filtres.concept_1.concept_2.obligatoires: Filters concept_1 and concept_2 are ma
 champ.type.url.concept_1.concept_2: You need an url field-type for concept_1 and concept_2
 filtres.dist_id.distance_max.obligatoires:  Filters dist_id and distance_max are mandatory
 rentrer.URI.passer.URI: You have to enter the string "URI" in order to pass an URI
+pas.concepts.pour.distance: There are no concepts for the distance
+identifiant.distance: and the distance ID
