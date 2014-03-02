@@ -149,17 +149,31 @@ class SemanticDistanceController extends FOSRestController{
 		}
 		
 		$session = new Session();
-		//$session->start();
-		if (!is_null($session->get('concept_1'))&&is_null($concept_1)){
-			$concept_1=$session->get('concept_1');//l'utilisateur consulte les autres pages
-			$dist_id=$session->get('dist_id');
-			$distance_max=$session->get('distance_max');
-			$ontology=$session->get('ontology');
+		if(version_compare(phpversion(),'5.4.0','<')){
+			//version pour le serveur tubo.lirmm.fr (version php 5.3.10)
+			if (isset($_SESSION['concept_1'])&&is_null($concept_1)){
+				$concept_1=$_SESSION['concept_1'];//l'utilisateur consulte les autres pages
+				$dist_id=$_SESSION['dist_id'];
+				$distance_max=$_SESSION['distance_max'];
+				$ontology=$_SESSION['ontology'];
+			}else{
+				$_SESSION['concept_1']=$concept_1;//l'utilisateur n'a pas encore fait de recherche
+				$_SESSION['dist_id']=$dist_id;
+				$_SESSION['distance_max']=$distance_max;
+				$_SESSION['ontology']=$ontology;
+			}
 		}else{
-			$session->set('concept_1', $concept_1);//l'utilisateur n'a pas encore fait de recherche
-			$session->set('dist_id', $dist_id);
-			$session->set('distance_max', $distance_max);
-			$session->set('ontology', $ontology);
+			if (!is_null($session->get('concept_1'))&&is_null($concept_1)){
+				$concept_1=$session->get('concept_1');//l'utilisateur consulte les autres pages
+				$dist_id=$session->get('dist_id');
+				$distance_max=$session->get('distance_max');
+				$ontology=$session->get('ontology');
+			}else{
+				$session->set('concept_1', $concept_1);//l'utilisateur n'a pas encore fait de recherche
+				$session->set('dist_id', $dist_id);
+				$session->set('distance_max', $distance_max);
+				$session->set('ontology', $ontology);
+			}
 		}
 		
 		$recup=$this->getSemSimId($concept_1, $ontology);
