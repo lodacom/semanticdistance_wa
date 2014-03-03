@@ -84,10 +84,7 @@ class ConstructGraph {
 		if (empty($path_to_root_2)){
 			$path_to_root_2=$concept2;
 		}
-		if (empty($path_to_root_1)&&empty($path_to_root_2)){
-			$this->tab_of_Node_1=null;//cas où les deux concepts n'ont pas de path to root
-			$this->tab_of_Node_2=null;
-		}
+
 		$common_ancestor=null;
 		if (strlen($path_to_root_1)>=strlen($path_to_root_2)){
 			if (!empty($path_to_root_1)&&!empty($path_to_root_2)){
@@ -102,7 +99,7 @@ class ConstructGraph {
 		$tab_1=split("\.", $path_to_root_1);
 		$tab_2=split("\.", $path_to_root_2);
 		if (empty($this->save_path_root_1)&&empty($this->save_path_root_2)){
-			$this->tab_of_Node_1=null;
+			$this->tab_of_Node_1=null;//cas où les deux concepts n'ont pas de path to root
 			$this->tab_of_Node_2=null;
 		}else{
 			if (empty($this->save_path_root_1)){
