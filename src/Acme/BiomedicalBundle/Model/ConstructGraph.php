@@ -10,11 +10,13 @@ class ConstructGraph {
 	
 	public $doctrine;
 	//....................................
-	//varibales pour le service 1
+	//variables pour le service 1
 	protected $tab_of_Node_1;
 	protected $tab_of_Node_2;
+	protected $save_path_root_1;
+	protected $save_path_root_2;
 	//....................................
-	//variable pour le service 2
+	//variables pour le service 2
 	protected $tab_of_Node;
 	protected $save_results;
 	protected $parent_viewed=array();
@@ -40,8 +42,15 @@ class ConstructGraph {
 	
 	public function getNode($id_tab,$index){
 		if ($id_tab==1){
+			if (empty($this->save_path_root_1)&&$index>=1){
+				return null;
+			}
 			return $this->tab_of_Node_1[$index];
+			
 		}else{
+			if (empty($this->save_path_root_2)&&$index>=1){
+				return null;
+			}
 			return $this->tab_of_Node_2[$index];
 		}
 	}
@@ -64,9 +73,19 @@ class ConstructGraph {
 		
 		$path_to_root_1=$concept1_path->getPathToRoot();//de la racine jusqu'à son parent
 		$path_to_root_2=$concept2_path->getPathToRoot();//OK
-
-		if (empty($path_to_root_1)||empty($path_to_root_2)){
-			$this->tab_of_Node_1=null;
+		
+		$this->save_path_root_1=$path_to_root_1;//on sauvegarde
+		$this->save_path_root_2=$path_to_root_2;
+		
+		if (empty($path_to_root_1)){
+			$path_to_root_1=$concept1;//permet de construir le graphe dans le cas
+			//où il n'y a pas de path to root pour le concept (donc est une racine de l'ontologie)
+		}
+		if (empty($path_to_root_2)){
+			$path_to_root_2=$concept2;
+		}
+		if (empty($path_to_root_1)&&empty($path_to_root_2)){
+			$this->tab_of_Node_1=null;//cas où les deux concepts n'ont pas de path to root
 			$this->tab_of_Node_2=null;
 		}
 		$common_ancestor=null;
@@ -82,12 +101,20 @@ class ConstructGraph {
 		//\Doctrine\Common\Util\Debug::dump($common_ancestor);
 		$tab_1=split("\.", $path_to_root_1);
 		$tab_2=split("\.", $path_to_root_2);
-		if (empty($path_to_root_1)||empty($path_to_root_2)){
+		if (empty($this->save_path_root_1)&&empty($this->save_path_root_2)){
 			$this->tab_of_Node_1=null;
 			$this->tab_of_Node_2=null;
 		}else{
-		$this->tab_of_Node_1=$this->getTermLinkToBioPortal($tab_1, $common_ancestor,$concept1);
-		$this->tab_of_Node_2=$this->getTermLinkToBioPortal($tab_2, $common_ancestor,$concept2);
+			if (empty($this->save_path_root_1)){
+				$this->tab_of_Node_1=$this->getTermLinkToBioPortal($tab_1, $common_ancestor,$concept1,true);
+			}else{
+				$this->tab_of_Node_1=$this->getTermLinkToBioPortal($tab_1, $common_ancestor,$concept1);
+			}
+			if (empty($this->save_path_root_2)){
+				$this->tab_of_Node_2=$this->getTermLinkToBioPortal($tab_2, $common_ancestor,$concept2,true);
+			}else{
+				$this->tab_of_Node_2=$this->getTermLinkToBioPortal($tab_2, $common_ancestor,$concept2);
+			}
 		}
 	}
 	
@@ -97,21 +124,22 @@ class ConstructGraph {
 	 * @param string $common_ancestor
 	 * @return array of Node
 	 */
-	private function getTermLinkToBioPortal($tab,$common_ancestor,$concept_leaf){
+	private function getTermLinkToBioPortal($tab,$common_ancestor,$concept_leaf, $root_is_leaf=false){
 		$i=count($tab)-1;//on commence par la fin sinon on s'arrête tout de suite
 		$node_array=array();
-		
-		$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
-		->findOneBy(array('concept_id'=>$concept_leaf));
-		$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
-		->find($concept_leaf);
-		$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
-		->find($concept->getOntologyId());
-		//on met la feuille en fin de pile (voir le reverse)
-		//\Doctrine\Common\Util\Debug::dump($term->getName());
-		
-		$node=new Node($term->getName(), $concept,$ontology);
-		array_push($node_array, $node);
+		if (!$root_is_leaf){//la feuille est une racine de l'ontologie
+			$term=$this->doctrine->getRepository("AcmeBiomedicalBundle:Term")
+			->findOneBy(array('concept_id'=>$concept_leaf));
+			$concept=$this->doctrine->getRepository("AcmeBiomedicalBundle:Concept")
+			->find($concept_leaf);
+			$ontology=$this->doctrine->getRepository("AcmeBiomedicalBundle:Ontology")
+			->find($concept->getOntologyId());
+			//on met la feuille en fin de pile (voir le reverse)
+			//\Doctrine\Common\Util\Debug::dump($term->getName());
+			
+			$node=new Node($term->getName(), $concept,$ontology);
+			array_push($node_array, $node);
+		}
 		
 		while ($i>0&&($tab[$i]!=$common_ancestor)){
 			$concept=$tab[$i];

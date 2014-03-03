@@ -185,7 +185,6 @@ class SemanticDistanceController extends FOSRestController{
 			$results=null;
 			$constructGraph=null;
 		}else{
-			//TODO: construct a graph
 			$constructGraph=new ConstructGraph($this->getDoctrine());
 			$constructGraph->getAllNodesAroundConcept($results->semantic_distances);
 		}

@@ -20,6 +20,9 @@ class DefaultController extends Controller
     	return $this->render('AcmeBiomedicalBundle:Default:ontology.html.twig',array('title'=>'Ontology','ontology'=>$result));
     }
     
+    /**
+     * Permet à l'utilisateur de changer de langue
+     */
     public function changeLanguage(){
     	$langue=null;
     	$tab_langue=array("fr","en");
@@ -63,8 +66,8 @@ class DefaultController extends Controller
     }
     
     /**
-     * Fonction permettant d'effectuer l'autocomplétion pour la page 
-     * semantic_distance.html.twig et index.html.twig .
+     * Fonction permettant d'effectuer l'autocomplétion pour effectuer une 
+     * recherche sur un concept.
      * Permet de chercher tous les termes possibles.
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -110,7 +113,8 @@ class DefaultController extends Controller
     /**
      * Fonction permettant d'effectuer l'autocomplétion pour la page 
      * semantic_distance.html.twig . Etant donner un terme donné et
-     * une ontologie.Ici on cherche une ontologie.
+     * une ontologie.Ici on cherche une ontologie en fonction
+     * d'un concept qui a été fourni.
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showOntologiesWithConceptAction(){
@@ -153,7 +157,7 @@ class DefaultController extends Controller
     
     /**
      * Fonction permettant d'effectuer l'autocomplétion pour la page
-     * semantic_distance.html.twig . Etant donner un terme donné et
+     * semantic_distance.html.twig . Etant donner un terme et
      * une ontologie.Ici on cherche un terme appartenant à une ontologie connue.
      * @return \Symfony\Component\HttpFoundation\Response
      */

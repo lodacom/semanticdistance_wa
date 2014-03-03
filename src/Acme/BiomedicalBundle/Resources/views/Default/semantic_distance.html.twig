@@ -416,13 +416,16 @@ javascripts %} {{ parent() }}
  var theUI = {
  			nodes:{
  		 		"{{  graph.getNode(1,0).getName()}}":{color:"red", alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,0).getAcronym()}}&full_id={{  graph.getNode(1,0).getFullId()}}' },
- 		 		{% for i in 1..graph.getSizeOfTab1() %}
+ 		 		{% if  graph.getSizeOfTab1() > 1 %}
+				{% for i in 1..graph.getSizeOfTab1() %}
  				{% if i==graph.getSizeOfTab1() %}
  				"{{ graph.getNode(1,i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,i).getAcronym()}}&full_id={{  graph.getNode(1,i).getFullId()}}' },
  				{% else %}
  				"{{ graph.getNode(1,i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(1,i).getAcronym()}}&full_id={{  graph.getNode(1,i).getFullId()}}' },
  				{% endif %}
  				{% endfor %}
+ 				{% endif %}
+ 				{% if  graph.getSizeOfTab2() > 1 %}
  				{% for i in 1..graph.getSizeOfTab2() %}
  				{% if i==graph.getSizeOfTab2() %}
  				"{{ graph.getNode(2,i).getName() }}":{color:CLR.demo, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(2,i).getAcronym()}}&full_id={{  graph.getNode(2,i).getFullId()}}' }
@@ -430,11 +433,12 @@ javascripts %} {{ parent() }}
  				"{{ graph.getNode(2,i).getName() }}":{color:CLR.branch, alpha:1, link: '{{path('acme_biomedical_link_to_bioportal')}}?ontology_acronym={{  graph.getNode(2,i).getAcronym()}}&full_id={{  graph.getNode(2,i).getFullId()}}' },
  				{% endif %}
  				{% endfor %}
+ 				{% endif %}
  		 	},
  		 	edges:{
  		 		"{{  graph.getNode(1,0).getName()}}":{
  		 			{%  if graph.getNode(1,1) is not null %}
- 		 				{%  if graph.getNode(2,1) is not null%}
+ 		 				{%  if graph.getNode(2,1) is not null %}
  		 					"{{  graph.getNode(1,1).getName()}}":{},
  		 					"{{  graph.getNode(2,1).getName()}}":{}
  		 				{% else %}
@@ -446,6 +450,7 @@ javascripts %} {{ parent() }}
  		 				{% endif %}
  		 			{% endif %}	
  	 		 	},
+ 	 		 	{% if  graph.getSizeOfTab1() > 1 %}
  	 		 	{% for i in 1..graph.getSizeOfTab1() %}
  	 		 	{% if i!=graph.getSizeOfTab1() %}
  	 		 		{%  if graph.getNode(1,i) is not null %}
@@ -458,6 +463,8 @@ javascripts %} {{ parent() }}
  	 		 		{% endif %}
  	 	 		 {% endif %}
  	 		 	{% endfor %}
+ 	 		 	{% endif %}
+ 	 		 	{% if  graph.getSizeOfTab2() > 1 %}
  	 		 	{% for i in 1..graph.getSizeOfTab2() %}
  	 		 	{% if i!=graph.getSizeOfTab2() %}
  	 		 		{%  if graph.getNode(2,i) is not null %}
@@ -470,6 +477,7 @@ javascripts %} {{ parent() }}
  	 		 		{% endif %}
  	 	 		 {% endif %}
  	 		 	{% endfor %}
+ 	 		 	{% endif %}
  		 	}
  		}
  var sys = arbor.ParticleSystem()

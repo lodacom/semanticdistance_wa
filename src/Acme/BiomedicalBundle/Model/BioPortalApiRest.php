@@ -10,6 +10,8 @@ class BioPortalApiRest {
 	 * 
 	 * @param string $acronym acronyme de l'ontologie
 	 * @param string $full_id URI du concept
+	 * @return string le lien permettant de rediriger vers le terme cliqué
+	 * sur BioPortal
 	 */
 	public function searchLinkBioPortal($acronym,$full_id){
 		$url_2= "http://data.bioontology.org/ontologies/".$acronym."/classes/".urlencode($full_id)."?apikey="
