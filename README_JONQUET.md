@@ -56,17 +56,18 @@ Help->Install New Software (de Eclipse) et mettez l'url suivante:
 http://p2-dev.pdt-extensions.org/
 
 Ensuite cochez les cases appelées:
-	* Symfony Feature
 
-	* Doctrine Feature
+  * Symfony Feature
+ 
+  * Doctrine Feature
 
-	* PHP Development Tools (PDT)
+  * PHP Development Tools (PDT)
 	
-	* Json EditorFeature
+  * Json EditorFeature
 	
-	* Twig Editor Feature
+  * Twig Editor Feature
 	
-	* YEdit Feature
+  * YEdit Feature
 
 Une fois ces différents plugins installés et Eclipse redémarré. Normalement
 vous pouvez importer le projet Symfony (le .project est présent sur le serveur
