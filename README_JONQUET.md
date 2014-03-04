@@ -57,10 +57,15 @@ http://p2-dev.pdt-extensions.org/
 
 Ensuite cochez les cases appelées:
 	* Symfony Feature
+
 	* Doctrine Feature
+
 	* PHP Development Tools (PDT)
+	
 	* Json EditorFeature
+	
 	* Twig Editor Feature
+	
 	* YEdit Feature
 
 Une fois ces différents plugins installés et Eclipse redémarré. Normalement
