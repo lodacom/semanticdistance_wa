@@ -19,14 +19,12 @@ Les fichiers de traduction se trouvent dans le répertoire
 1) Règles primordiales
 ----------------------
 
-A chaque fois que vous créez un fichier quel qu'il soit 
-(php,css,image,js... Pas besoin pour les twig). Il faut demander à Symfony de le
+A chaque fois que vous créez un fichier de traducation, il faut demander à Symfony de le
 prendre en compte en mettant en ligne de commande:
 app/console cache:clear --env=dev (pour le mode dev)
 app/console cache:clear --env=prod (pour le mode prod)
 
-A chaque fois que vous créez un fichier de type css, image,
-js (dans leur répertoire respectif), il faut déclencher
+A chaque fois que vous créez ou installer un nouveau bundle il faut déclencher au moins une fois
 la ligne de commande suivante:
 php app/console assets:install web --symlink
 
